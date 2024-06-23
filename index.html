@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finança total</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .tela-inicial {
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            position: relative;
+            /* Adicionado para posição relativa */
+            overflow: hidden;
+            /* Adicionado para esconder o overflow do pseudo-elemento */
+            animation: none;
+            /* Adicionada animação de pulso */
+        }
+
+        .login:hover {
+            /* box-shadow: 0 0 0 3px #28a745; */
+            /* Aumenta a sombra ao fazer hover para criar a borda */
+            animation: pulse 3s infinite;
+            /* Para a animação ao fazer hover */
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 5px #28a745;
+                /* Começa com a borda verde */
+            }
+
+            25% {
+                box-shadow: 0 0 0 5px #ae00ff;
+            }
+
+            50% {
+                box-shadow: 0 0 0 5px #007bff;
+                /* Muda para borda azul na metade da animação */
+            }
+
+            75% {
+                box-shadow: 0 0 0 5px #ffb61a;
+            }
+
+            100% {
+                box-shadow: 0 0 0 5px #dc3545;
+                /* Termina com borda vermelha */
+            }
+        }
+
+        .login h1 {
+            color: #28a745;
+        }
+
+        .login h3 {
+            color: #6c757d;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            margin-bottom: 10px;
+            color: #6c757d;
+        }
+
+        input[type="text"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+        /* @media (max-width: 600px) {
+            body {
+                height: 75vh;
+            }
+        } */
+    </style>
+</head>
+
+<body>
+    <div class="tela-inicial">
+        <div class="login">
+            <h1>Transforme suas Finanças com o Finança Total</h1>
+            <h3>Faça seu log-in abaixo!</h3>
+            <form action="#" id="form">
+
+                <label for="nome">Nome: </label>
+                <input type="text" id="nome" required placeholder="Digite o seu primeiro nome">
+
+                <input type="submit">
+            </form>
+        </div>
+    </div>
+
+</body>
+<script src="app.js"></script>
+<script src="service_worker.js"></script>
+<script>
+    document.getElementById("form").addEventListener('submit', function (event) {
+        event.preventDefault();
+        const nome = document.getElementById('nome').value;
+        localStorage.setItem('nomeUsuario', nome);
+        window.location.href = 'display.html';
+    })
+</script>
+
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finança Total</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@latest"></script>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bem vindo, <span id="nomeUsuarioDisplay"></span>!</h1>
+        </div>
+        <div class="saldo">
+            <h2>Saldo Atual</h2>
+            <p id="saldo-valor">R$ 0,00</p>
+        </div>
+        <div class="receita-despesa">
+            <div class="receita">
+                <h2>Receita</h2>
+                <p id="receita-valor">R$ 0,00</p>
+            </div>
+            <div class="despesa">
+                <h2>Despesa</h2>
+                <p id="despesa-valor">R$ 0,00</p>
+            </div>
+        </div>
+        <div class="menu">
+            <div class="dropdown">
+                <button class="dropbtn">Editar</button>
+                <div class="dropdown-content">
+                    <a href="#" id="editarSaldo">Saldo</a>
+                    <a href="#" id="editarReceita">Receita</a>
+                    <a href="#" id="editarDespesa">Despesa</a>
+                </div>
+            </div>
+            <button id="cameraBtn">Câmera</button>
+        </div>
+        <div class="graficos">
+            <h2>Gráficos de Gastos</h2>
+            <canvas id="grafico-gastos"></canvas>
+        </div>
+        <div class="historico">
+            <h2>Histórico</h2>
+            <ul id="historico-lista">
+                <li>Nenhuma transação registrada.</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Modal para editar valores -->
+    <div id="editarModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeEditarModal">&times;</span>
+            <h2>Editar <span id="tipoEdicao"></span></h2>
+            <input type="number" id="valorEdicao" placeholder="Novo Valor">
+            <button id="salvarValores">Salvar</button>
+        </div>
+    </div>
+    
+    <!-- Modal para câmera -->
+    <div id="cameraModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeCameraModal">&times;</span>
+            <h2>Leitor de Código de Barras</h2>
+            <div id="reader" style="width:100%">
+                <video src="" id="video" autoplay></video>
+                <canvas id="canvas">
+
+                </canvas>
+            </div>
+            <button id="detect">Capturar</button>
+        </div>
+    </div>
+</body>
+<script src="app.js"></script>
+<script src="camera.js"></script>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        exibirNomeUsuario();
+        carregarValores();
+    });
+
+    function exibirNomeUsuario() {
+        const nomeUsuario = localStorage.getItem('nomeUsuario');
+        if (nomeUsuario) {
+            document.getElementById('nomeUsuarioDisplay').textContent = nomeUsuario;
+        } else {
+            document.getElementById('nomeUsuarioDisplay').textContent = 'Usuário';
+        }
+    }
+
+    function atualizarValores(saldo, receita, despesa) {
+        const nomeUsuario = localStorage.getItem('nomeUsuario');
+        if (nomeUsuario) {
+            const dadosUsuario = {
+                saldo: saldo,
+                receita: receita,
+                despesa: despesa
+            };
+            localStorage.setItem(nomeUsuario, JSON.stringify(dadosUsuario));
+        }
+
+        document.getElementById('saldo-valor').textContent = `R$ ${saldo.toFixed(2)}`;
+        document.getElementById('receita-valor').textContent = `R$ ${receita.toFixed(2)}`;
+        document.getElementById('despesa-valor').textContent = `R$ ${despesa.toFixed(2)}`;
+    }
+
+    function carregarValores() {
+        const nomeUsuario = localStorage.getItem('nomeUsuario');
+        if (nomeUsuario) {
+            const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
+                saldo: 0.00,
+                receita: 0.00,
+                despesa: 0.00
+            };
+            atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
+        } else {
+            atualizarValores(0.00, 0.00, 0.00);
+        }
+    }
+
+    const dadosGrafico = {
+        labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho'],
+        datasets: [{
+            data: [300, 400, 200, 500, 700, 600, 400],
+            backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#dc3545', '#007bff', '#6c757d', '#343a40']
+        }]
+    };
+
+    const configGrafico = {
+        type: 'pie',
+        data: dadosGrafico,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return `R$ ${tooltipItem.raw.toFixed(2)}`;
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    const ctx = document.getElementById('grafico-gastos').getContext('2d');
+    const graficoGastos = new Chart(ctx, configGrafico);
+
+    ctx.canvas.style.maxWidth = '350px';
+    ctx.canvas.style.maxHeight = '350px';
+
+    const editarSaldo = document.getElementById('editarSaldo');
+    const editarReceita = document.getElementById('editarReceita');
+    const editarDespesa = document.getElementById('editarDespesa');
+    const editarModal = document.getElementById('editarModal');
+    const closeEditarModal = document.getElementById('closeEditarModal');
+    const salvarValores = document.getElementById('salvarValores');
+    const tipoEdicao = document.getElementById('tipoEdicao');
+    const valorEdicao = document.getElementById('valorEdicao');
+
+    let tipoAtual = '';
+
+    editarSaldo.onclick = function() {
+        editarModal.style.display = "block";
+        tipoEdicao.textContent = 'Saldo';
+        tipoAtual = 'saldo';
+    }
+
+    editarReceita.onclick = function() {
+        editarModal.style.display = "block";
+        tipoEdicao.textContent = 'Receita';
+        tipoAtual = 'receita';
+    }
+
+    editarDespesa.onclick = function() {
+        editarModal.style.display = "block";
+        tipoEdicao.textContent = 'Despesa';
+        tipoAtual = 'despesa';
+    }
+
+    closeEditarModal.onclick = function() {
+        editarModal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == editarModal) {
+            editarModal.style.display = "none";
+        }
+    }
+
+    salvarValores.onclick = function() {
+        const novoValor = parseFloat(valorEdicao.value) || 0;
+        const nomeUsuario = localStorage.getItem('nomeUsuario');
+        if (nomeUsuario) {
+            const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
+                saldo: 0.00,
+                receita: 0.00,
+                despesa: 0.00
+            };
+
+            if (tipoAtual === 'saldo') {
+                dadosUsuario.saldo = novoValor;
+            } else if (tipoAtual === 'receita') {
+                dadosUsuario.receita = novoValor;
+            } else if (tipoAtual === 'despesa') {
+                dadosUsuario.despesa = novoValor;
+            }
+
+            localStorage.setItem(nomeUsuario, JSON.stringify(dadosUsuario));
+            atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
+        }
+        editarModal.style.display = "none";
+    }
+    </script>
+</html>
