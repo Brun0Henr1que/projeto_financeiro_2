@@ -173,11 +173,19 @@ h2 {
     align-items: center;
 }
 
-#reader{
-    height: 500px;
+#reader {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 75%; /* Mantém a proporção de 4:3 */
+    background-color: black;
 }
 
-#video{
-    max-width: 700px;
-    max-height: 700px;
+#video, #canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Preenche o elemento mantendo a proporção */
 }
