@@ -18,7 +18,7 @@ const closeCameraModal = document.getElementById('closeCameraModal');
 
 cameraBtn.onclick = function () {
     cameraModal.style.display = "block";
-    navigator.mediaDevices.getUserMedia({ video: true, facingMode: "environment"})
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } } })
         .then((stream) => {
             video.srcObject = stream;
             video.play();
