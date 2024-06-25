@@ -36,3 +36,20 @@ document.getElementById('closeCameraModal').onclick = function() {
         video.srcObject = null;
     }
 };
+
+document.getElementById('detect').onclick = function() {
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    // Define o tamanho do canvas para corresponder ao tamanho do vídeo
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    // Desenha o frame atual do vídeo no canvas
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Oculta o vídeo e exibe o canvas
+    video.style.display = 'none';
+    canvas.style.display = 'block';
+};
