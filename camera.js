@@ -52,11 +52,18 @@ document.getElementById('detect').onclick = function () {
 
     // Ler código de barras da imagem
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const code = jsQR(imageData.data, canvas.width, canvas.height);
-
-    if (code) {
-        codigoResultado.textContent = `Código detectado: ${code.data}`;
-    } else {
-        codigoResultado.textContent = "Nenhum código detectado.";
-    }
+    Quagga.decodeSingle({
+        src: canvas.toDataURL(),
+        numOfWorkers: 0,
+        decoder: {
+            readers: ["code_128_reader"]
+        },
+        locate: true,
+    }, function(result) {
+        if (result && result.codeResult) {
+            codigoResultado.textContent = `Código detectado: ${result.codeResult.code}`;
+        } else {
+            codigoResultado.textContent = "Nenhum código detectado.";
+        }
+    });
 };
