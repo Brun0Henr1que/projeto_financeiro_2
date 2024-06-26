@@ -19,14 +19,14 @@ cameraBtn.onclick = function () {
         });
 }
 
-document.getElementById('closeCameraModal').onclick = function() {
+document.getElementById('closeCameraModal').onclick = function () {
     document.getElementById('cameraModal').style.display = "none";
     const video = document.getElementById('video');
     if (video.srcObject) {
         const stream = video.srcObject;
         const tracks = stream.getTracks();
 
-        tracks.forEach(function(track) {
+        tracks.forEach(function (track) {
             track.stop();
         });
 
@@ -34,7 +34,7 @@ document.getElementById('closeCameraModal').onclick = function() {
     }
 };
 
-document.getElementById('detect').onclick = function() {
+document.getElementById('detect').onclick = function () {
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
@@ -49,14 +49,14 @@ document.getElementById('detect').onclick = function() {
     // Oculta o vídeo e exibe o canvas
     video.style.display = 'none';
     canvas.style.display = 'block';
+
+    // Ler código de barras da imagem
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, canvas.width, canvas.height);
+
+    if (code) {
+        codigoResultado.textContent = `Código detectado: ${code.data}`;
+    } else {
+        codigoResultado.textContent = "Nenhum código detectado.";
+    }
 };
-
-// Ler código de barras da imagem
-const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-const code = jsQR(imageData.data, canvas.width, canvas.height);
-
-if (code) {
-    codigoResultado.textContent = `Código detectado: ${code.data}`;
-} else {
-    codigoResultado.textContent = "Nenhum código detectado.";
-}
