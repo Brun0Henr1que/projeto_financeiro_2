@@ -73,7 +73,7 @@ document.getElementById('detect').onclick = function () {
         locate: true,
     }, function(result) {
         if (result && result.codeResult) {
-            codigoResultado.textContent = `Código detectado: ${result.codeResult.code}`;
+            codigoResultado.textContent = `Código detectado: ${result}`;
         } else {
             codigoResultado.textContent = "Nenhum código detectado.";
         }
