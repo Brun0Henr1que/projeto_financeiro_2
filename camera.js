@@ -5,7 +5,9 @@ const context = canvas.getContext('2d');
 const cameraBtn = document.getElementById('cameraBtn');
 const cameraModal = document.getElementById('cameraModal');
 const closeCameraModal = document.getElementById('closeCameraModal');
-const codigoResultado = document.getElementById('valor')
+const codigoResultado = document.getElementById('valor');
+
+let qrScanner;
 
 cameraBtn.onclick = function () {
     cameraModal.style.display = "block";
@@ -50,32 +52,14 @@ document.getElementById('detect').onclick = function () {
     video.style.display = 'none';
     canvas.style.display = 'block';
 
-    // Ler código de barras da imagem
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    Quagga.decodeSingle({
-        src: canvas.toDataURL(),
-        numOfWorkers: 0,
-        decoder: {
-            readers: [
-                "code_128_reader",
-                "ean_reader",
-                "ean_8_reader",
-                "code_39_reader",
-                "code_39_vin_reader",
-                "codabar_reader",
-                "upc_reader",
-                "upc_e_reader",
-                "i2of5_reader",
-                "2of5_reader",
-                "code_93_reader"
-            ] 
-        },
-        locate: true,
-    }, function(result) {
-        if (result && result.codeResult) {
+    // Ler QR code da imagem
+    QrScanner.scanImage(canvas)
+        .then(result => {
             codigoResultado.textContent = `Código detectado: ${result}`;
-        } else {
+            stopVideo();
+        })
+        .catch(err => {
+            console.error("Erro ao ler o QR code: ", err);
             codigoResultado.textContent = "Nenhum código detectado.";
-        }
-    });
+        });
 };
