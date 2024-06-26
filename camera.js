@@ -53,10 +53,10 @@ document.getElementById('detect').onclick = function () {
     canvas.style.display = 'block';
 
     // Ler QR code da imagem
-    QrScanner.scanImage(canvas)
+    qrScanner.scanImage(canvas)
         .then(result => {
             codigoResultado.textContent = `Código detectado: ${result}`;
-            stopVideo();
+            // stopVideo();
         })
         .catch(err => {
             console.error("Erro ao ler o QR code: ", err);
