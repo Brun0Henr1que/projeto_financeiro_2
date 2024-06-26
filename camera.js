@@ -1,59 +1,3 @@
-// const video = document.getElementById('video');
-// const canvas = document.getElementById('canvas');
-// const context = canvas.getContext('2d');
-
-// const cameraBtn = document.getElementById('cameraBtn');
-// const cameraModal = document.getElementById('cameraModal');
-// const closeCameraModal = document.getElementById('closeCameraModal');
-// const codigoResultado = document.getElementById('valor');
-
-
-// cameraBtn.onclick = function () {
-//     cameraModal.style.display = "block";
-//     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-//         .then((stream) => {
-//             video.srcObject = stream;
-//             video.play();
-//             video.style.display = 'block';
-//             canvas.style.display = 'none';
-//         })
-//         .catch((err) => {
-//             console.error("Erro ao acessar a câmera: ", err);
-//         });
-// }
-
-// document.getElementById('closeCameraModal').onclick = function () {
-//     document.getElementById('cameraModal').style.display = "none";
-//     const video = document.getElementById('video');
-//     if (video.srcObject) {
-//         const stream = video.srcObject;
-//         const tracks = stream.getTracks();
-
-//         tracks.forEach(function (track) {
-//             track.stop();
-//         });
-
-//         video.srcObject = null;
-//     }
-// };
-
-// document.getElementById('detect').onclick = function () {
-//     const video = document.getElementById('video');
-//     const canvas = document.getElementById('canvas');
-//     const context = canvas.getContext('2d');
-
-//     // Define o tamanho do canvas para corresponder ao tamanho do vídeo
-//     canvas.width = video.videoWidth;
-//     canvas.height = video.videoHeight;
-
-//     // Desenha o frame atual do vídeo no canvas
-//     context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-//     // Oculta o vídeo e exibe o canvas
-//     video.style.display = 'none';
-//     canvas.style.display = 'block';
-// };
-
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
@@ -110,7 +54,7 @@ cameraBtn.onclick = function () {
         .then((stream) => {
             video.srcObject = stream;
             video.play();
-            startQrScanner(); // Inicia o scanner de QR code ao abrir a câmera
+            // startQrScanner(); // Inicia o scanner de QR code ao abrir a câmera
         })
         .catch((err) => {
             console.error('Erro ao acessar a câmera: ', err);
@@ -130,7 +74,6 @@ closeCameraModal.onclick = function () {
     }
 };
 
-// Evento do botão "Detectar" (poderia ser o mesmo botão ou outro, dependendo do seu caso)
 document.getElementById('detect').onclick = function () {
     startQrScanner(); // Inicia o scanner de QR code manualmente ao clicar em "Detectar"
 };
