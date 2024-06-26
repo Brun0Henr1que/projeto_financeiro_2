@@ -5,7 +5,7 @@ const context = canvas.getContext('2d');
 const cameraBtn = document.getElementById('cameraBtn');
 const cameraModal = document.getElementById('cameraModal');
 const closeCameraModal = document.getElementById('closeCameraModal');
-const codigoResultado = docuemnt.getElementById('valor')
+const codigoResultado = document.getElementById('valor')
 
 cameraBtn.onclick = function () {
     cameraModal.style.display = "block";
