@@ -7,6 +7,8 @@ const cameraModal = document.getElementById('cameraModal');
 const closeCameraModal = document.getElementById('closeCameraModal');
 const codigoResultado = document.getElementById('valor');
 
+let scanner;
+
 cameraBtn.onclick = function () {
     cameraModal.style.display = "block";
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
@@ -19,6 +21,18 @@ cameraBtn.onclick = function () {
         .catch((err) => {
             console.error("Erro ao acessar a câmera: ", err);
         });
+
+    scanner = new Instascan.Scanner({ video: video });
+
+    Instascan.Camera.getCameras().then(cameras => {
+        if (cameras.length > 0) {
+            scanner.start(cameras[0]); // Usa a primeira câmera encontrada
+        } else {
+            console.error('Não foi possível encontrar câmeras.');
+        }
+    }).catch(err => {
+        console.error('Erro ao acessar câmeras:', err);
+    });
 }
 
 document.getElementById('closeCameraModal').onclick = function () {
@@ -53,13 +67,11 @@ document.getElementById('detect').onclick = function () {
     canvas.style.display = 'block';
 
     // Ler QR code da imagem
-    QrScanner.scanImage(canvas)
-        .then(result => {
-            codigoResultado.textContent = `Código detectado: ${result}`;
-            // stopVideo();
-        })
-        .catch(err => {
-            console.error("Erro ao ler o QR code: ", err);
-            codigoResultado.textContent = "Nenhum código detectado.";
-        });
+    scanner.scan().then(result => {
+        codigoResultado.textContent = `Código detectado: ${result}`;
+        stopScan();
+    }).catch(err => {
+        console.error("Erro ao ler o QR code: ", err);
+        codigoResultado.textContent = "Nenhum código detectado.";
+    });
 };
