@@ -85,21 +85,19 @@ const cameraModal = document.getElementById('cameraModal');
 const closeCameraModal = document.getElementById('closeCameraModal');
 const codigoResultado = document.getElementById('codigoResultado');
 
-let scanner;
-
 cameraBtn.onclick = function () {
     cameraModal.style.display = "block";
-    scanner = new Instascan.Scanner({ video: video });
-
+    const scanner = new Instascan.Scanner({ video: video });
+    scanner.addListener('scan', content => {
+        codigoResultado.textContent = `Código detectado: ${content}`;
+    })
     Instascan.Camera.getCameras().then(cameras => {
         if (cameras.length > 0) {
             scanner.start(cameras[0]); // Usa a primeira câmera encontrada
         } else {
             console.error('Não foi possível encontrar câmeras.');
         }
-    }).catch(err => {
-        console.error('Erro ao acessar câmeras:', err);
-    });
+    })
 };
 
 closeCameraModal.onclick = function() {
@@ -107,32 +105,32 @@ closeCameraModal.onclick = function() {
     stopScan();
 };
 
-document.getElementById('detect').onclick = function() {
-    // Captura a imagem do vídeo no canvas
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+// document.getElementById('detect').onclick = function() {
+//     // Captura a imagem do vídeo no canvas
+//     canvas.width = video.videoWidth;
+//     canvas.height = video.videoHeight;
+//     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Oculta o vídeo e exibe o canvas
-    video.style.display = 'none';
-    canvas.style.display = 'block';
+//     // Oculta o vídeo e exibe o canvas
+//     video.style.display = 'none';
+//     canvas.style.display = 'block';
 
-    // Ler QR code da imagem
-    scanner.scan().then(result => {
-        codigoResultado.textContent = `Código detectado: ${result}`;
-        stopScan();
-    }).catch(err => {
-        console.error("Erro ao ler o QR code: ", err);
-        codigoResultado.textContent = "Nenhum código detectado.";
-    });
-};
+//     // Ler QR code da imagem
+//     scanner.scan().then(result => {
+//         codigoResultado.textContent = `Código detectado: ${result}`;
+//         stopScan();
+//     }).catch(err => {
+//         console.error("Erro ao ler o QR code: ", err);
+//         codigoResultado.textContent = "Nenhum código detectado.";
+//     });
+// };
 
-function stopScan() {
-    if (scanner) {
-        scanner.stop();
-    }
-    const stream = video.srcObject;
-    const tracks = stream.getTracks();
-    tracks.forEach(track => track.stop());
-    video.srcObject = null;
-}
+// function stopScan() {
+//     if (scanner) {
+//         scanner.stop();
+//     }
+//     const stream = video.srcObject;
+//     const tracks = stream.getTracks();
+//     tracks.forEach(track => track.stop());
+//     video.srcObject = null;
+// }
