@@ -7,14 +7,14 @@ const cameraModal = document.getElementById('cameraModal');
 const closeCameraModal = document.getElementById('closeCameraModal');
 const codigoResultado = document.getElementById('valor');
 
-let qrScanner;
-
 cameraBtn.onclick = function () {
     cameraModal.style.display = "block";
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
         .then((stream) => {
             video.srcObject = stream;
             video.play();
+            video.style.display = 'block';
+            canvas.style.display = 'none';
         })
         .catch((err) => {
             console.error("Erro ao acessar a câmera: ", err);
@@ -53,7 +53,7 @@ document.getElementById('detect').onclick = function () {
     canvas.style.display = 'block';
 
     // Ler QR code da imagem
-    qrScanner.scanImage(canvas)
+    QrScanner.scanImage(canvas)
         .then(result => {
             codigoResultado.textContent = `Código detectado: ${result}`;
             // stopVideo();
