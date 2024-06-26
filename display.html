@@ -6,7 +6,8 @@
     <title>Finança Total</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/html5-qrcode@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
     <link rel="manifest" href="manifest.json">
     <style>
         
@@ -49,7 +50,7 @@
         <div class="historico">
             <h2>Histórico</h2>
             <ul id="historico-lista">
-                <li>Nenhuma transação registrada.</li>
+               
             </ul>
         </div>
     </div>
@@ -84,9 +85,37 @@
 <script>
 
     document.addEventListener('DOMContentLoaded', function() {
-        exibirNomeUsuario();
-        carregarValores();
-    });
+    exibirNomeUsuario();
+    carregarValores();
+    carregarHistorico();
+});
+
+function carregarHistorico() {
+    const nomeUsuario = localStorage.getItem('nomeUsuario');
+    if (nomeUsuario) {
+        const historico = JSON.parse(localStorage.getItem(`${nomeUsuario}_historico`)) || [];
+        const historicoLista = document.getElementById('historico-lista');
+        historicoLista.innerHTML = ''; // Limpar a lista atual
+
+        historico.forEach(transacao => {
+            const itemHistorico = document.createElement('li');
+            itemHistorico.textContent = `${transacao.tipo.toUpperCase()} - R$ ${transacao.valor.toFixed(2)} (${transacao.data})`;
+            historicoLista.appendChild(itemHistorico);
+        });
+
+        // Exibir mensagem de "Nenhuma transação registrada." se o histórico estiver vazio
+        const textoNenhumaTransacao = document.getElementById('textoNenhumaTransacao');
+        if (historico.length === 0) {
+            if (textoNenhumaTransacao) {
+                textoNenhumaTransacao.style.display = 'block';
+            }
+        } else {
+            if (textoNenhumaTransacao) {
+                textoNenhumaTransacao.style.display = 'none';
+            }
+        }
+    }
+}
 
     function exibirNomeUsuario() {
         const nomeUsuario = localStorage.getItem('nomeUsuario');
@@ -223,5 +252,56 @@
         }
         editarModal.style.display = "none";
     }
+	
+	function registrarTransacao(tipo, valor) {
+		const historicoLista = document.getElementById('historico-lista');
+		const itemHistorico = document.createElement('li');
+		const dataHora = new Date().toLocaleString();
+		itemHistorico.textContent = `${tipo.toUpperCase()} - R$ ${valor.toFixed(2)} (${dataHora})`;
+		historicoLista.appendChild(itemHistorico);
+
+    // Salvar transação no localStorage
+    const nomeUsuario = localStorage.getItem('nomeUsuario');
+		if (nomeUsuario) {
+			const transacao = {
+				tipo: tipo,
+				valor: valor,
+				data: dataHora
+			};
+
+			let historico = JSON.parse(localStorage.getItem(`${nomeUsuario}_historico`)) || [];
+			historico.push(transacao);
+			localStorage.setItem(`${nomeUsuario}_historico`, JSON.stringify(historico));
+		}
+
+		// Remover o texto de "Nenhuma transação registrada." se houver transações
+		const textoNenhumaTransacao = document.getElementById('textoNenhumaTransacao');
+		if (textoNenhumaTransacao) {
+			textoNenhumaTransacao.style.display = 'none';
+		}
+	}
+	
+	salvarValores.onclick = function() {
+		const novoValor = parseFloat(valorEdicao.value) || 0;
+		const nomeUsuario = localStorage.getItem('nomeUsuario');
+		if (nomeUsuario) {
+			const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
+				saldo: 0.00,
+				receita: 0.00,
+				despesa: 0.00
+			};
+
+			// Atualizar o valor correspondente com base no tipo atual
+			dadosUsuario[tipoAtual] = novoValor;
+
+			localStorage.setItem(nomeUsuario, JSON.stringify(dadosUsuario));
+			atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
+
+			// Registrar a transação no histórico
+			registrarTransacao(tipoAtual, novoValor);
+		}
+		editarModal.style.display = "none";
+	}
+
     </script>
 </html>

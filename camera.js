@@ -18,10 +18,6 @@ cameraBtn.onclick = function () {
         });
 }
 
-// closeCameraModal.onclick = function () {
-//     cameraModal.style.display = "none";
-// }
-
 document.getElementById('closeCameraModal').onclick = function() {
     document.getElementById('cameraModal').style.display = "none";
     const video = document.getElementById('video');
@@ -53,3 +49,13 @@ document.getElementById('detect').onclick = function() {
     video.style.display = 'none';
     canvas.style.display = 'block';
 };
+
+// Ler código de barras da imagem
+const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+const code = jsQR(imageData.data, canvas.width, canvas.height);
+
+if (code) {
+    codigoResultado.textContent = `Código detectado: ${code.data}`;
+} else {
+    codigoResultado.textContent = "Nenhum código detectado.";
+}
