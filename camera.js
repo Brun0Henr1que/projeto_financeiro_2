@@ -30,15 +30,15 @@ function startQrScanner() {
     // Se um QR code for encontrado, exibe seu conteúdo
     if (code) {
         stopQrScanner();
-        const val = decoder(code.data)
-        codigoResultado.textContent = 'Valor: ' + val['Transaction Amount'];
+        const response = decoder(code.data)
+        codigoResultado.textContent = 'Valor: ' + response['Transaction Amount'];
         const addicionar_despesa = document.getElementById('add_despesa');
         const editarDespesa = document.getElementById('editarDespesa');
         const valorEdicao = document.getElementById('valorEdicao');
         addicionar_despesa.addEventListener('click', ()=>{
             closeCameraModal.click()
             editarDespesa.click()
-            valorEdicao.value = parseFloat(val);
+            valorEdicao.value = parseFloat(response['Transaction Amount']);
         })
     } else {
         // Se não encontrar, continua verificando em intervalos curtos
