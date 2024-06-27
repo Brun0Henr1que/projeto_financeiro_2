@@ -43,8 +43,8 @@ function startQrScanner() {
 // Função para parar o scanner de QR code
 function stopQrScanner() {
     clearTimeout(qrScannerInterval);
-    video.style.display = 'block';
-    canvas.style.display = 'none';
+    video.style.display = 'none';
+    canvas.style.display = 'block';
 }
 
 // Evento do botão para abrir a câmera
@@ -75,5 +75,5 @@ closeCameraModal.onclick = function () {
 };
 
 document.getElementById('detect').onclick = function () {
-    startQrScanner(); // Inicia o scanner de QR code manualmente ao clicar em "Detectar"
+    startQrScanner(); // Inicia o scanner de QR code manualmente ao clicar em "Câmera"
 };
