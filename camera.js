@@ -34,14 +34,16 @@ function startQrScanner() {
     } else {
         // Se não encontrar, continua verificando em intervalos curtos
         qrScannerInterval = setTimeout(startQrScanner, 200);
+        video.style.display = 'block';
+        canvas.style.display = 'none';
     }
 }
 
 // Função para parar o scanner de QR code
 function stopQrScanner() {
     clearTimeout(qrScannerInterval);
-    // video.style.display = 'none';
-    // canvas.style.display = 'block';
+    video.style.display = 'none';
+    canvas.style.display = 'block';
 }
 
 // Evento do botão para abrir a câmera
