@@ -32,6 +32,13 @@ function startQrScanner() {
         stopQrScanner();
         const val = decoder(code.data)
         codigoResultado.textContent = 'Valor: ' + val['Transaction Amount'];
+        const addicionar_despesa = document.getElementById('add_despesa');
+        const editarDespesa = document.getElementById('editarDespesa');
+        const valorEdicao = document.getElementById('valorEdicao');
+        addicionar_despesa.addEventListener('click', ()=>{
+            editarDespesa.click()
+            valorEdicao.value = val;
+        })
     } else {
         // Se não encontrar, continua verificando em intervalos curtos
         qrScannerInterval = setTimeout(startQrScanner, 200);
