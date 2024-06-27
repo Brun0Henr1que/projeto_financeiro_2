@@ -38,7 +38,7 @@ function startQrScanner() {
         addicionar_despesa.addEventListener('click', ()=>{
             closeCameraModal.click()
             editarDespesa.click()
-            valorEdicao.value = val;
+            valorEdicao.value = parseFloat(val);
         })
     } else {
         // Se não encontrar, continua verificando em intervalos curtos
