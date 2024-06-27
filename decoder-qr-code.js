@@ -31,4 +31,4 @@ function decoder(codigo_qr){
     };
 };
 
-document.getElementById('valor').innerText = `Valor: ${data['Transaction Amount']}`;
+document.getElementById('valor').textContent = `Valor: ${data['Transaction Amount']}`;
