@@ -29,9 +29,9 @@ function startQrScanner() {
 
     // Se um QR code for encontrado, exibe seu conteúdo
     if (code) {
-        // codigoResultado.textContent = 'QR Code encontrado: ' + code.data;
         stopQrScanner();
-        decoder(code.data)
+        const val = decoder(code.data)
+        codigoResultado.textContent = 'Valor: ' + val['Transaction Amount'];
     } else {
         // Se não encontrar, continua verificando em intervalos curtos
         qrScannerInterval = setTimeout(startQrScanner, 200);

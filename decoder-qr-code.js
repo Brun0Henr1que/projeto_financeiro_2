@@ -27,8 +27,8 @@ function decoder(codigo_qr){
             data[dict[id]] = dado;
         }
         const resto = codigo.slice(pacote.length);
-        decoder(resto)
+        return decoder(resto);
+    } else{
+      return data;
     };
 };
-
-document.getElementById('valor').textContent = `Valor: ${data['Transaction Amount']}`;
