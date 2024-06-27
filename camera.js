@@ -10,9 +10,6 @@ let qrScannerInterval;
 
 // Função para iniciar o scanner de QR code
 function startQrScanner() {
-    // // Esconde o vídeo e mostra o canvas
-    // video.style.display = 'none';
-    // canvas.style.display = 'block';
 
     // Define o tamanho do canvas para corresponder ao tamanho do vídeo
     canvas.width = video.videoWidth;
@@ -43,8 +40,8 @@ function startQrScanner() {
 // Função para parar o scanner de QR code
 function stopQrScanner() {
     clearTimeout(qrScannerInterval);
-    video.style.display = 'none';
-    canvas.style.display = 'block';
+    // video.style.display = 'none';
+    // canvas.style.display = 'block';
 }
 
 // Evento do botão para abrir a câmera
@@ -76,6 +73,6 @@ closeCameraModal.onclick = function () {
 
 document.getElementById('detect').onclick = function () {
     startQrScanner(); // Inicia o scanner de QR code manualmente ao clicar em "Câmera"
-    video.style.display = 'block';
-    canvas.style.display = 'none';
+    video.style.display = 'none';
+    canvas.style.display = 'block';
 };
