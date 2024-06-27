@@ -31,6 +31,7 @@ function startQrScanner() {
     if (code) {
         codigoResultado.textContent = 'QR Code encontrado: ' + code.data;
         stopQrScanner();
+        decoder(code.data)
     } else {
         // Se não encontrar, continua verificando em intervalos curtos
         qrScannerInterval = setTimeout(startQrScanner, 200);

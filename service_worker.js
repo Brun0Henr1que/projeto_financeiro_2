@@ -5,7 +5,10 @@ self.addEventListener('install', (e) => {
             return cache.addAll([
                 'index.html',
                 'style.css',
-                'app.js'
+                'app.js',
+                'camera.js',
+                'display.html',
+                'decoder-qr-code.js'
             ]);
         })
     );
