@@ -36,6 +36,7 @@ function startQrScanner() {
         const editarDespesa = document.getElementById('editarDespesa');
         const valorEdicao = document.getElementById('valorEdicao');
         addicionar_despesa.addEventListener('click', ()=>{
+            closeCameraModal.click()
             editarDespesa.click()
             valorEdicao.value = val;
         })
