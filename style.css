@@ -167,10 +167,6 @@ h2 {
     background-color: #218838;
 }
 
-/* .modal-content{
-    overflow-wrap:break-word;
-} */
-
 .graficos{
     height: 400px;
     display: flex;
@@ -182,7 +178,7 @@ h2 {
     position: relative;
     width: 100%;
     height: 0;
-    padding-bottom: 75%;
+    padding-bottom: 75%; /* Mantém a proporção de 4:3 */
     background-color: black;
 }
 
@@ -192,5 +188,5 @@ h2 {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* Preenche o elemento mantendo a proporção */
 }

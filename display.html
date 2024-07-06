@@ -1,51 +1,54 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finança Total</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="jsQR.js"></script>
-    <link rel="manifest" href="manifest.json">
-    <style>
-        
-    </style>
-</head>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Finança Total</title>
+		<link rel="stylesheet" href="style.css">
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="https://unpkg.com/html5-qrcode@latest"></script>
+		<link rel="manifest" href="manifest.json">
+	</head>
 <body>
+
     <div class="container">
         <div class="header">
             <h1>Bem vindo, <span id="nomeUsuarioDisplay"></span>!</h1>
         </div>
+		
         <div class="saldo">
             <h2>Saldo Atual</h2>
             <p id="saldo-valor">R$ 0,00</p>
         </div>
+		
         <div class="receita-despesa">
             <div class="receita">
                 <h2>Receita</h2>
                 <p id="receita-valor">R$ 0,00</p>
             </div>
+			
             <div class="despesa">
                 <h2>Despesa</h2>
                 <p id="despesa-valor">R$ 0,00</p>
             </div>
         </div>
+		
         <div class="menu">
             <div class="dropdown">
-                <button class="dropbtn">Editar</button>
+                <button class="dropbtn">Adicionar</button>
                 <div class="dropdown-content">
-                    <a href="#" id="editarSaldo">Saldo</a>
                     <a href="#" id="editarReceita">Receita</a>
                     <a href="#" id="editarDespesa">Despesa</a>
                 </div>
             </div>
-            <button id="cameraBtn">Câmera</button>
+<!--           <button id="limparDados">Limpar Dados</button> --> <!-- Botão para limpar todos os dados -->
         </div>
+		
         <div class="graficos">
             <h2>Gráficos de Gastos</h2>
             <canvas id="grafico-gastos"></canvas>
         </div>
+		
         <div class="historico">
             <h2>Histórico</h2>
             <ul id="historico-lista">
@@ -53,23 +56,92 @@
             </ul>
         </div>
     </div>
-    
-    <!-- Modal para editar valores -->
-    <div id="editarModal" class="modal">
-        <div class="modal-content">
-            <span class="close" id="closeEditarModal">&times;</span>
-            <h2>Editar <span id="tipoEdicao"></span></h2>
-            <input type="number" id="valorEdicao" placeholder="Novo Valor">
-            <button id="salvarValores">Salvar</button>
-        </div>
-    </div>
+	
+    <!-- Modal para exibir detalhes da transação -->
+	<div id="detalhesModal" class="modal">
+		<div class="modal-content">
+			<span class="close" id="closeDetalhesModal">&times;</span>
+			<h2>Detalhes da Transação</h2>
+				<p><strong>Tipo:</strong> <span id="tipoDetalhe"></span></p>
+				<p><strong>Valor:</strong> <span id="valorDetalhe"></span></p>
+				<p><strong>Descrição:</strong> <span id="descricaoDetalhe"></span></p>
+				<p><strong>Categoria:</strong> <span id="categoriaDetalhe"></span></p>
+				<p><strong>Data:</strong> <span id="dataDetalhe"></span></p>
+				<p><strong>Hora:</strong> <span id="horaDetalhe"></span></p>
+				<p><strong>Anexo:</strong> <a id="anexoDetalhe" target="_blank"></a></p>
+		</div>
+	</div>
+	
+	<!-- Modal para editar Receita -->
+	<div id="editarModalReceita" class="modal">
+		<div class="modal-content">
+			<span class="close" id="closeEditarModalReceita">&times;</span>
+			<h2>Editar Receita</h2>
+				<input type="number" id="valorEdicaoReceita" placeholder="Novo Valor">
+				<input type="text" id="descricaoEdicaoReceita" placeholder="Descrição">
+				<label for="categoriaReceita">Categoria:</label>
+					<select id="categoriaReceita">
+						<option value="alimentacao">Alimentação</option>
+						<option value="moradia">Moradia</option>
+						<option value="transporte">Transporte</option>
+						<option value="saude">Saúde</option>
+						<option value="educacao">Educação</option>
+						<option value="lazer">Lazer e Entretenimento</option>
+						<option value="roupas">Roupas e Acessórios</option>
+						<option value="utilidades">Eletricidade, Água e Gás</option>
+						<option value="telecomunicacoes">Telecomunicações</option>
+						<option value="impostos">Impostos e Taxas</option>
+						<option value="seguros">Seguros</option>
+						<option value="doacoes">Doações e Caridade</option>
+						<option value="economias">Economias e Investimentos</option>
+						<option value="manutencao">Manutenção do Lar</option>
+						<option value="animais">Animais de Estimação</option>
+					</select>
+				<input type="date" id="dataEdicaoReceita">
+				<input type="time" id="horaEdicaoReceita">
+				<input type="file" id="anexoEdicaoReceita">
+				<button id="salvarValoresReceita">Salvar</button>
+		</div>
+	</div>
+
+	<!-- Modal para editar Despesa -->
+	<div id="editarModalDespesa" class="modal">
+		<div class="modal-content">
+			<span class="close" id="closeEditarModalDespesa">&times;</span>
+			<h2>Editar Despesa</h2>
+				<input type="number" id="valorEdicaoDespesa" placeholder="Novo Valor">
+				<input type="text" id="descricaoEdicaoDespesa" placeholder="Descrição">
+				<label for="categoriaDespesa">Categoria:</label>
+					<select id="categoriaDespesa">
+						<option value="alimentacao">Alimentação</option>
+						<option value="moradia">Moradia</option>
+						<option value="transporte">Transporte</option>
+						<option value="saude">Saúde</option>
+						<option value="educacao">Educação</option>
+						<option value="lazer">Lazer e Entretenimento</option>
+						<option value="roupas">Roupas e Acessórios</option>
+						<option value="utilidades">Eletricidade, Água e Gás</option>
+						<option value="telecomunicacoes">Telecomunicações</option>
+						<option value="impostos">Impostos e Taxas</option>
+						<option value="seguros">Seguros</option>
+						<option value="doacoes">Doações e Caridade</option>
+						<option value="economias">Economias e Investimentos</option>
+						<option value="manutencao">Manutenção do Lar</option>
+						<option value="animais">Animais de Estimação</option>
+					</select>
+				<input type="date" id="dataEdicaoDespesa">
+				<input type="time" id="horaEdicaoDespesa">
+				<input type="file" id="anexoEdicaoDespesa">
+				<button id="cameraBtn">Câmera</button>
+				<button id="salvarValoresDespesa">Salvar</button>
+		</div>
+	</div>
     
     <!-- Modal para câmera -->
     <div id="cameraModal" class="modal">
         <div class="modal-content">
             <span class="close" id="closeCameraModal">&times;</span>
-            <h2>Leitor de QR Code</h2>
-            <p id="valor">Posicione o código de barras</p>
+            <h2>Leitor de Código de Barras</h2>
             <div id="reader" style="width:100%">
                 <video src="" id="video" autoplay></video>
                 <canvas id="canvas">
@@ -77,233 +149,304 @@
                 </canvas>
             </div>
             <button id="detect">Capturar</button>
-            <button id="add_despesa">Adicionar Despesa</button>
         </div>
     </div>
+	
 </body>
+
+
 <script src="app.js"></script>
 <script src="camera.js"></script>
-<script src="decoder-qr-code.js"></script>
 <script>
 
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     exibirNomeUsuario();
     carregarValores();
     carregarHistorico();
 });
+/*		
+	// Função para limpar todos os dados do usuário
+		function limparDadosUsuario() {
+			const nomeUsuario = localStorage.getItem('nomeUsuario');
 
-function carregarHistorico() {
-    const nomeUsuario = localStorage.getItem('nomeUsuario');
-    if (nomeUsuario) {
-        const historico = JSON.parse(localStorage.getItem(`${nomeUsuario}_historico`)) || [];
-        const historicoLista = document.getElementById('historico-lista');
-        historicoLista.innerHTML = ''; // Limpar a lista atual
+			// Limpar valores de saldo, receita e despesa
+			localStorage.removeItem(nomeUsuario);
 
-        historico.forEach(transacao => {
-            const itemHistorico = document.createElement('li');
-            itemHistorico.textContent = `${transacao.tipo.toUpperCase()} - R$ ${transacao.valor.toFixed(2)} (${transacao.data})`;
-            historicoLista.appendChild(itemHistorico);
+			// Limpar histórico de transações
+			localStorage.removeItem(`${nomeUsuario}-historico`);
+
+			// Atualizar valores na interface
+			atualizarValores(0.00, 0.00, 0.00);
+			carregarHistorico(); // Isso vai limpar a lista de histórico na interface
+		}
+
+	// Evento para o botão de limpar dados
+		document.getElementById('limparDados').addEventListener('click', () => {
+			if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
+				limparDadosUsuario();
+				alert('Todos os dados foram removidos com sucesso.');
+			}
+		});
+*/
+    // Função para exibir o nome do usuário
+        function exibirNomeUsuario() {
+            const nomeUsuario = localStorage.getItem('nomeUsuario');
+            if (nomeUsuario) {
+                document.getElementById('nomeUsuarioDisplay').textContent = nomeUsuario;
+            } else {
+                document.getElementById('nomeUsuarioDisplay').textContent = 'Usuário';
+            }
+        }
+
+    // Função para carregar os valores iniciais do usuário
+        function carregarValores() {
+            const nomeUsuario = localStorage.getItem('nomeUsuario');
+            if (nomeUsuario) {
+                const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
+                    saldo: 0.00,
+                    receita: 0.00,
+                    despesa: 0.00
+                };
+                atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
+            } else {
+                atualizarValores(0.00, 0.00, 0.00);
+            }
+        }
+
+    // Função para atualizar os valores de saldo, receita e despesa no HTML
+        function atualizarValores(saldo, receita, despesa) {
+            const novoSaldo = receita - despesa;
+            const saldoElemento = document.getElementById('saldo-valor');
+            const receitaElemento = document.getElementById('receita-valor');
+            const despesaElemento = document.getElementById('despesa-valor');
+
+            saldoElemento.textContent = `R$ ${novoSaldo.toFixed(2)}`;
+            receitaElemento.textContent = `R$ ${receita.toFixed(2)}`;
+            despesaElemento.textContent = `R$ ${despesa.toFixed(2)}`;
+        }
+
+    // Função para salvar os valores de Receita ou Despesa
+        function salvarValores(tipo) {
+            let novoValor = 0;
+            let descricao = '';
+			let categoria = '';
+            let data = '';
+            let hora = '';
+            let anexo = '';
+
+            if (tipo === 'receita') {
+                novoValor = parseFloat(document.getElementById('valorEdicaoReceita').value) || 0;
+                descricao = document.getElementById('descricaoEdicaoReceita').value.trim();
+				categoria = document.getElementById('categoriaReceita').value;
+                data = document.getElementById('dataEdicaoReceita').value;
+                hora = document.getElementById('horaEdicaoReceita').value;
+                anexo = document.getElementById('anexoEdicaoReceita').value;
+            } else if (tipo === 'despesa') {
+                novoValor = parseFloat(document.getElementById('valorEdicaoDespesa').value) || 0;
+                descricao = document.getElementById('descricaoEdicaoDespesa').value.trim();
+				categoria = document.getElementById('categoriaDespesa').value;
+                data = document.getElementById('dataEdicaoDespesa').value;
+                hora = document.getElementById('horaEdicaoDespesa').value;
+                anexo = document.getElementById('anexoEdicaoDespesa').value;
+            }
+
+            const nomeUsuario = localStorage.getItem('nomeUsuario');
+			
+            if (nomeUsuario) {
+                const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
+                    saldo: 0.00,
+                    receita: 0.00,
+                    despesa: 0.00
+                };
+
+            // Atualizar o valor correspondente com base no tipo
+                if (tipo === 'receita') {
+                    dadosUsuario.receita += novoValor;
+                } else if (tipo === 'despesa') {
+                    dadosUsuario.despesa += novoValor;
+                }
+
+            // Atualizar o saldo
+                dadosUsuario.saldo = dadosUsuario.receita - dadosUsuario.despesa;
+
+            // Salvar de volta no localStorage
+                localStorage.setItem(nomeUsuario, JSON.stringify(dadosUsuario));
+				
+			// Limpar os campos do modal após salvar
+				if (tipo === 'receita') {
+					document.getElementById('valorEdicaoReceita').value = '';
+					document.getElementById('descricaoEdicaoReceita').value = '';
+					document.getElementById('dataEdicaoReceita').value = '';
+					document.getElementById('horaEdicaoReceita').value = '';
+					document.getElementById('anexoEdicaoReceita').value = '';
+				} else if (tipo === 'despesa') {
+					document.getElementById('valorEdicaoDespesa').value = '';
+					document.getElementById('descricaoEdicaoDespesa').value = '';
+					document.getElementById('dataEdicaoDespesa').value = '';
+					document.getElementById('horaEdicaoDespesa').value = '';
+					document.getElementById('anexoEdicaoDespesa').value = '';
+				}
+						
+			// Fechar o modal após salvar
+				if (tipo === 'receita') {
+					document.getElementById('editarModalReceita').style.display = 'none';
+				} else if (tipo === 'despesa') {
+					document.getElementById('editarModalDespesa').style.display = 'none';
+				}				
+						
+			// Recarregar o histórico após salvar a nova transação
+				carregarHistorico();
+				
+			// Adicionar a transação ao histórico
+				const historico = JSON.parse(localStorage.getItem(`${nomeUsuario}-historico`)) || [];
+				const novaTransacao = {
+					id: new Date().getTime(),
+					tipo: tipo === 'receita' ? 'Receita' : 'Despesa',
+					valor: novoValor,
+					descricao: descricao,
+					data: data,
+					hora: hora,
+					anexo: anexo,
+					dataHora: new Date().toLocaleString(), 
+					categoria: categoria 
+				};
+				historico.push(novaTransacao);
+				localStorage.setItem(`${nomeUsuario}-historico`, JSON.stringify(historico));
+
+            // Atualizar os valores na interface
+                atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
+
+                }
+			}	
+
+    // Função para carregar o histórico de transações do usuário
+        function carregarHistorico() {
+            const nomeUsuario = localStorage.getItem('nomeUsuario');
+            const historicoLista = document.getElementById('historico-lista');
+            historicoLista.innerHTML = '';
+
+            if (nomeUsuario) {
+                const chaveHistorico = `${nomeUsuario}-historico`;
+				let historico = JSON.parse(localStorage.getItem(chaveHistorico)) || [];
+
+			// Ordenar o histórico pela ordem de adição (pelo ID)
+				historico.sort((a, b) => a.id - b.id);
+				
+                historico.forEach(transacao => {
+                    const li = document.createElement('li');
+					const dataHoraFormatada = new Date(transacao.dataHora).toLocaleString();
+                    li.textContent = `${transacao.tipo}: R$ ${transacao.valor.toFixed(2)} - ${transacao.descricao} (${dataHoraFormatada})`;
+                    li.setAttribute('data-id', transacao.id);
+                    li.addEventListener('click', exibirDetalhesTransacao);
+                    historicoLista.appendChild(li);
+                });
+            }
+        }
+
+    // Função para exibir os detalhes de uma transação
+        function exibirDetalhesTransacao(event) {
+            const nomeUsuario = localStorage.getItem('nomeUsuario');
+            if (nomeUsuario) {
+				const chaveHistorico = `${nomeUsuario}-historico`;
+                const historico = JSON.parse(localStorage.getItem(chaveHistorico)) || [];
+                const idTransacao = event.target.getAttribute('data-id');
+                const transacao = historico.find(t => t.id === parseInt(idTransacao));
+
+                if (transacao) {
+                    document.getElementById('tipoDetalhe').textContent = transacao.tipo;
+                    document.getElementById('valorDetalhe').textContent = `R$ ${transacao.valor.toFixed(2)}`;
+                    document.getElementById('descricaoDetalhe').textContent = transacao.descricao;
+					document.getElementById('categoriaDetalhe').textContent = transacao.categoria;
+                    document.getElementById('dataDetalhe').textContent = new Date(transacao.dataHora).toLocaleDateString();
+					document.getElementById('horaDetalhe').textContent = transacao.hora; //
+                    // Verificar se há um anexo
+						if (transacao.anexo) {
+							document.getElementById('anexoDetalhe').textContent = 'Visualizar anexo';
+							document.getElementById('anexoDetalhe').setAttribute('href', transacao.anexo);
+						} else {
+							document.getElementById('anexoDetalhe').textContent = 'Nenhum anexo';
+							document.getElementById('anexoDetalhe').removeAttribute('href');
+						}
+                    document.getElementById('detalhesModal').style.display = 'block';
+                } else {
+					console.log('Transação não encontrada com ID:', idTransacao);
+				}
+            }
+        }
+
+    // Eventos para fechar o modal ao clicar no 'X' e fora do modal
+        document.querySelectorAll('.close').forEach(element => {
+            element.addEventListener('click', () => {
+                document.getElementById(element.id.replace('close', '')).style.display = 'none';
+            });
         });
 
-        // Exibir mensagem de "Nenhuma transação registrada." se o histórico estiver vazio
-        const textoNenhumaTransacao = document.getElementById('textoNenhumaTransacao');
-        if (historico.length === 0) {
-            if (textoNenhumaTransacao) {
-                textoNenhumaTransacao.style.display = 'block';
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
             }
-        } else {
-            if (textoNenhumaTransacao) {
-                textoNenhumaTransacao.style.display = 'none';
-            }
-        }
-    }
-}
+        };
 
-    function exibirNomeUsuario() {
-        const nomeUsuario = localStorage.getItem('nomeUsuario');
-        if (nomeUsuario) {
-            document.getElementById('nomeUsuarioDisplay').textContent = nomeUsuario;
-        } else {
-            document.getElementById('nomeUsuarioDisplay').textContent = 'Usuário';
-        }
-    }
+    // Eventos para abrir os modais de edição de Receita e Despesa
+        document.getElementById('editarReceita').addEventListener('click', () => {
+            document.getElementById('editarModalReceita').style.display = 'block';
+        });
 
-    function atualizarValores(saldo, receita, despesa) {
-        const nomeUsuario = localStorage.getItem('nomeUsuario');
-        if (nomeUsuario) {
-            const dadosUsuario = {
-                saldo: saldo,
-                receita: receita,
-                despesa: despesa
-            };
-            localStorage.setItem(nomeUsuario, JSON.stringify(dadosUsuario));
-        }
+        document.getElementById('editarDespesa').addEventListener('click', () => {
+            document.getElementById('editarModalDespesa').style.display = 'block';
+        });
 
-        document.getElementById('saldo-valor').textContent = `R$ ${saldo.toFixed(2)}`;
-        document.getElementById('receita-valor').textContent = `R$ ${receita.toFixed(2)}`;
-        document.getElementById('despesa-valor').textContent = `R$ ${despesa.toFixed(2)}`;
-    }
+    // Eventos para salvar os valores editados de Receita e Despesa
+        document.getElementById('salvarValoresReceita').addEventListener('click', () => {
+            salvarValores('receita');
+        });
 
-    function carregarValores() {
-        const nomeUsuario = localStorage.getItem('nomeUsuario');
-        if (nomeUsuario) {
-            const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
-                saldo: 0.00,
-                receita: 0.00,
-                despesa: 0.00
-            };
-            atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
-        } else {
-            atualizarValores(0.00, 0.00, 0.00);
-        }
-    }
-
-    const dadosGrafico = {
-        labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho'],
-        datasets: [{
-            data: [300, 400, 200, 500, 700, 600, 400],
-            backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#dc3545', '#007bff', '#6c757d', '#343a40']
-        }]
-    };
-
-    const configGrafico = {
-        type: 'pie',
-        data: dadosGrafico,
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(tooltipItem) {
-                            return `R$ ${tooltipItem.raw.toFixed(2)}`;
-                        }
-                    }
-                }
-            }
-        }
-    };
-
-    const ctx = document.getElementById('grafico-gastos').getContext('2d');
-    const graficoGastos = new Chart(ctx, configGrafico);
-
-    ctx.canvas.style.maxWidth = '350px';
-    ctx.canvas.style.maxHeight = '350px';
-
-    const editarSaldo = document.getElementById('editarSaldo');
-    const editarReceita = document.getElementById('editarReceita');
-    const editarDespesa = document.getElementById('editarDespesa');
-    const editarModal = document.getElementById('editarModal');
-    const closeEditarModal = document.getElementById('closeEditarModal');
-    const salvarValores = document.getElementById('salvarValores');
-    const tipoEdicao = document.getElementById('tipoEdicao');
-    const valorEdicao = document.getElementById('valorEdicao');
-
-    let tipoAtual = '';
-
-    editarSaldo.onclick = function() {
-        editarModal.style.display = "block";
-        tipoEdicao.textContent = 'Saldo';
-        tipoAtual = 'saldo';
-    }
-
-    editarReceita.onclick = function() {
-        editarModal.style.display = "block";
-        tipoEdicao.textContent = 'Receita';
-        tipoAtual = 'receita';
-    }
-
-    editarDespesa.onclick = function() {
-        editarModal.style.display = "block";
-        tipoEdicao.textContent = 'Despesa';
-        tipoAtual = 'despesa';
-    }
-
-    closeEditarModal.onclick = function() {
-        editarModal.style.display = "none";
-    }
-
-    window.onclick = function(event) {
-        if (event.target == editarModal) {
-            editarModal.style.display = "none";
-        }
-    }
-
-    salvarValores.onclick = function() {
-        const novoValor = parseFloat(valorEdicao.value) || 0;
-        const nomeUsuario = localStorage.getItem('nomeUsuario');
-        if (nomeUsuario) {
-            const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
-                saldo: 0.00,
-                receita: 0.00,
-                despesa: 0.00
-            };
-
-            if (tipoAtual === 'saldo') {
-                dadosUsuario.saldo = novoValor;
-            } else if (tipoAtual === 'receita') {
-                dadosUsuario.receita = novoValor;
-            } else if (tipoAtual === 'despesa') {
-                dadosUsuario.despesa = novoValor;
-            }
-
-            localStorage.setItem(nomeUsuario, JSON.stringify(dadosUsuario));
-            atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
-        }
-        editarModal.style.display = "none";
-    }
-	
-	function registrarTransacao(tipo, valor) {
-		const historicoLista = document.getElementById('historico-lista');
-		const itemHistorico = document.createElement('li');
-		const dataHora = new Date().toLocaleString();
-		itemHistorico.textContent = `${tipo.toUpperCase()} - R$ ${valor.toFixed(2)} (${dataHora})`;
-		historicoLista.appendChild(itemHistorico);
-
-    // Salvar transação no localStorage
-    const nomeUsuario = localStorage.getItem('nomeUsuario');
-		if (nomeUsuario) {
-			const transacao = {
-				tipo: tipo,
-				valor: valor,
-				data: dataHora
-			};
-
-			let historico = JSON.parse(localStorage.getItem(`${nomeUsuario}_historico`)) || [];
-			historico.push(transacao);
-			localStorage.setItem(`${nomeUsuario}_historico`, JSON.stringify(historico));
+        document.getElementById('salvarValoresDespesa').addEventListener('click', () => {
+            salvarValores('despesa');
+        });
+		
+	// Função para fechar modal
+		function fecharModal(idModal) {
+			document.getElementById(idModal).style.display = 'none';
 		}
 
-		// Remover o texto de "Nenhuma transação registrada." se houver transações
-		const textoNenhumaTransacao = document.getElementById('textoNenhumaTransacao');
-		if (textoNenhumaTransacao) {
-			textoNenhumaTransacao.style.display = 'none';
-		}
-	}
-	
-	salvarValores.onclick = function() {
-		const novoValor = parseFloat(valorEdicao.value) || 0;
-		const nomeUsuario = localStorage.getItem('nomeUsuario');
-		if (nomeUsuario) {
-			const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
-				saldo: 0.00,
-				receita: 0.00,
-				despesa: 0.00
-			};
+	// Eventos para fechar o modal ao clicar no 'X' e fora do modal
+		document.querySelectorAll('.close').forEach(element => {
+			element.addEventListener('click', () => {
+				fecharModal(element.parentElement.parentElement.id);
+			});
+		});
 
-			// Atualizar o valor correspondente com base no tipo atual
-			dadosUsuario[tipoAtual] = novoValor;
+		window.onclick = function(event) {
+			if (event.target.classList.contains('modal')) {
+				fecharModal(event.target.id);
+			}
+		};
 
-			localStorage.setItem(nomeUsuario, JSON.stringify(dadosUsuario));
-			atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
+	// Eventos para abrir os modais de edição de Receita e Despesa
+		document.getElementById('editarReceita').addEventListener('click', () => {
+			document.getElementById('editarModalReceita').style.display = 'block';
+		});
 
-			// Registrar a transação no histórico
-			registrarTransacao(tipoAtual, novoValor);
-		}
-		editarModal.style.display = "none";
-	}
+		document.getElementById('editarDespesa').addEventListener('click', () => {
+			document.getElementById('editarModalDespesa').style.display = 'block';
+		});
 
-    </script>
+	// Eventos para salvar os valores editados de Receita e Despesa
+		document.getElementById('salvarValoresReceita').addEventListener('click', () => {
+			salvarValores('receita');
+		});
+
+		document.getElementById('salvarValoresDespesa').addEventListener('click', () => {
+			salvarValores('despesa');
+		});
+
+	// Eventos para fechar o modal ao pressionar "Esc"
+		document.addEventListener('keydown', function(event) {
+			if (event.key === 'Escape') {
+				fecharModal('editarModalReceita');
+				fecharModal('editarModalDespesa');
+			}
+		});
+</script>
 </html>
