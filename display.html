@@ -45,9 +45,10 @@
         </div>
 		
         <div class="graficos">
-            <h2>Gráficos de Gastos</h2>
-            <canvas id="grafico-gastos"></canvas>
-        </div>
+			<h2>Gráficos de Gastos</h2>
+			<canvas id="grafico-pizza"></canvas>
+		</div>
+		
 		
         <div class="historico">
             <h2>Histórico</h2>
@@ -158,11 +159,11 @@
 <script src="app.js"></script>
 <script src="camera.js"></script>
 <script>
-
 document.addEventListener('DOMContentLoaded', function() {
     exibirNomeUsuario();
     carregarValores();
     carregarHistorico();
+    gerarGraficoPizza();
 });
 /*		
 	// Função para limpar todos os dados do usuário
@@ -189,203 +190,190 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 */
     // Função para exibir o nome do usuário
-        function exibirNomeUsuario() {
-            const nomeUsuario = localStorage.getItem('nomeUsuario');
-            if (nomeUsuario) {
-                document.getElementById('nomeUsuarioDisplay').textContent = nomeUsuario;
-            } else {
-                document.getElementById('nomeUsuarioDisplay').textContent = 'Usuário';
-            }
-        }
+	function exibirNomeUsuario() {
+    const nomeUsuario = localStorage.getItem('nomeUsuario');
+    if (nomeUsuario) {
+        document.getElementById('nomeUsuarioDisplay').textContent = nomeUsuario;
+    } else {
+        document.getElementById('nomeUsuarioDisplay').textContent = 'Usuário';
+    }
+}
 
-    // Função para carregar os valores iniciais do usuário
-        function carregarValores() {
-            const nomeUsuario = localStorage.getItem('nomeUsuario');
-            if (nomeUsuario) {
-                const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
-                    saldo: 0.00,
-                    receita: 0.00,
-                    despesa: 0.00
-                };
-                atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
-            } else {
-                atualizarValores(0.00, 0.00, 0.00);
-            }
-        }
-
-    // Função para atualizar os valores de saldo, receita e despesa no HTML
-        function atualizarValores(saldo, receita, despesa) {
-            const novoSaldo = receita - despesa;
-            const saldoElemento = document.getElementById('saldo-valor');
-            const receitaElemento = document.getElementById('receita-valor');
-            const despesaElemento = document.getElementById('despesa-valor');
-
-            saldoElemento.textContent = `R$ ${novoSaldo.toFixed(2)}`;
-            receitaElemento.textContent = `R$ ${receita.toFixed(2)}`;
-            despesaElemento.textContent = `R$ ${despesa.toFixed(2)}`;
-        }
-
-    // Função para salvar os valores de Receita ou Despesa
-        function salvarValores(tipo) {
-            let novoValor = 0;
-            let descricao = '';
-			let categoria = '';
-            let data = '';
-            let hora = '';
-            let anexo = '';
-
-            if (tipo === 'receita') {
-                novoValor = parseFloat(document.getElementById('valorEdicaoReceita').value) || 0;
-                descricao = document.getElementById('descricaoEdicaoReceita').value.trim();
-				categoria = document.getElementById('categoriaReceita').value;
-                data = document.getElementById('dataEdicaoReceita').value;
-                hora = document.getElementById('horaEdicaoReceita').value;
-                anexo = document.getElementById('anexoEdicaoReceita').value;
-            } else if (tipo === 'despesa') {
-                novoValor = parseFloat(document.getElementById('valorEdicaoDespesa').value) || 0;
-                descricao = document.getElementById('descricaoEdicaoDespesa').value.trim();
-				categoria = document.getElementById('categoriaDespesa').value;
-                data = document.getElementById('dataEdicaoDespesa').value;
-                hora = document.getElementById('horaEdicaoDespesa').value;
-                anexo = document.getElementById('anexoEdicaoDespesa').value;
-            }
-
-            const nomeUsuario = localStorage.getItem('nomeUsuario');
-			
-            if (nomeUsuario) {
-                const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
-                    saldo: 0.00,
-                    receita: 0.00,
-                    despesa: 0.00
-                };
-
-            // Atualizar o valor correspondente com base no tipo
-                if (tipo === 'receita') {
-                    dadosUsuario.receita += novoValor;
-                } else if (tipo === 'despesa') {
-                    dadosUsuario.despesa += novoValor;
-                }
-
-            // Atualizar o saldo
-                dadosUsuario.saldo = dadosUsuario.receita - dadosUsuario.despesa;
-
-            // Salvar de volta no localStorage
-                localStorage.setItem(nomeUsuario, JSON.stringify(dadosUsuario));
-				
-			// Limpar os campos do modal após salvar
-				if (tipo === 'receita') {
-					document.getElementById('valorEdicaoReceita').value = '';
-					document.getElementById('descricaoEdicaoReceita').value = '';
-					document.getElementById('dataEdicaoReceita').value = '';
-					document.getElementById('horaEdicaoReceita').value = '';
-					document.getElementById('anexoEdicaoReceita').value = '';
-				} else if (tipo === 'despesa') {
-					document.getElementById('valorEdicaoDespesa').value = '';
-					document.getElementById('descricaoEdicaoDespesa').value = '';
-					document.getElementById('dataEdicaoDespesa').value = '';
-					document.getElementById('horaEdicaoDespesa').value = '';
-					document.getElementById('anexoEdicaoDespesa').value = '';
-				}
-						
-			// Fechar o modal após salvar
-				if (tipo === 'receita') {
-					document.getElementById('editarModalReceita').style.display = 'none';
-				} else if (tipo === 'despesa') {
-					document.getElementById('editarModalDespesa').style.display = 'none';
-				}				
-						
-			// Recarregar o histórico após salvar a nova transação
-				carregarHistorico();
-				
-			// Adicionar a transação ao histórico
-				const historico = JSON.parse(localStorage.getItem(`${nomeUsuario}-historico`)) || [];
-				const novaTransacao = {
-					id: new Date().getTime(),
-					tipo: tipo === 'receita' ? 'Receita' : 'Despesa',
-					valor: novoValor,
-					descricao: descricao,
-					data: data,
-					hora: hora,
-					anexo: anexo,
-					dataHora: new Date().toLocaleString(), 
-					categoria: categoria 
-				};
-				historico.push(novaTransacao);
-				localStorage.setItem(`${nomeUsuario}-historico`, JSON.stringify(historico));
-
-            // Atualizar os valores na interface
-                atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
-
-                }
-			}	
-
-    // Função para carregar o histórico de transações do usuário
-        function carregarHistorico() {
-            const nomeUsuario = localStorage.getItem('nomeUsuario');
-            const historicoLista = document.getElementById('historico-lista');
-            historicoLista.innerHTML = '';
-
-            if (nomeUsuario) {
-                const chaveHistorico = `${nomeUsuario}-historico`;
-				let historico = JSON.parse(localStorage.getItem(chaveHistorico)) || [];
-
-			// Ordenar o histórico pela ordem de adição (pelo ID)
-				historico.sort((a, b) => a.id - b.id);
-				
-                historico.forEach(transacao => {
-                    const li = document.createElement('li');
-					const dataHoraFormatada = new Date(transacao.dataHora).toLocaleString();
-                    li.textContent = `${transacao.tipo}: R$ ${transacao.valor.toFixed(2)} - ${transacao.descricao} (${dataHoraFormatada})`;
-                    li.setAttribute('data-id', transacao.id);
-                    li.addEventListener('click', exibirDetalhesTransacao);
-                    historicoLista.appendChild(li);
-                });
-            }
-        }
-
-    // Função para exibir os detalhes de uma transação
-        function exibirDetalhesTransacao(event) {
-            const nomeUsuario = localStorage.getItem('nomeUsuario');
-            if (nomeUsuario) {
-				const chaveHistorico = `${nomeUsuario}-historico`;
-                const historico = JSON.parse(localStorage.getItem(chaveHistorico)) || [];
-                const idTransacao = event.target.getAttribute('data-id');
-                const transacao = historico.find(t => t.id === parseInt(idTransacao));
-
-                if (transacao) {
-                    document.getElementById('tipoDetalhe').textContent = transacao.tipo;
-                    document.getElementById('valorDetalhe').textContent = `R$ ${transacao.valor.toFixed(2)}`;
-                    document.getElementById('descricaoDetalhe').textContent = transacao.descricao;
-					document.getElementById('categoriaDetalhe').textContent = transacao.categoria;
-                    document.getElementById('dataDetalhe').textContent = new Date(transacao.dataHora).toLocaleDateString();
-					document.getElementById('horaDetalhe').textContent = transacao.hora; //
-                    // Verificar se há um anexo
-						if (transacao.anexo) {
-							document.getElementById('anexoDetalhe').textContent = 'Visualizar anexo';
-							document.getElementById('anexoDetalhe').setAttribute('href', transacao.anexo);
-						} else {
-							document.getElementById('anexoDetalhe').textContent = 'Nenhum anexo';
-							document.getElementById('anexoDetalhe').removeAttribute('href');
-						}
-                    document.getElementById('detalhesModal').style.display = 'block';
-                } else {
-					console.log('Transação não encontrada com ID:', idTransacao);
-				}
-            }
-        }
-
-    // Eventos para fechar o modal ao clicar no 'X' e fora do modal
-        document.querySelectorAll('.close').forEach(element => {
-            element.addEventListener('click', () => {
-                document.getElementById(element.id.replace('close', '')).style.display = 'none';
-            });
-        });
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
+function carregarValores() {
+    const nomeUsuario = localStorage.getItem('nomeUsuario');
+    if (nomeUsuario) {
+        const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
+            saldo: 0.00,
+            receita: 0.00,
+            despesa: 0.00
         };
+        atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
+    } else {
+        atualizarValores(0.00, 0.00, 0.00);
+    }
+}
+
+function atualizarValores(saldo, receita, despesa) {
+    const novoSaldo = receita - despesa;
+    const saldoElemento = document.getElementById('saldo-valor');
+    const receitaElemento = document.getElementById('receita-valor');
+    const despesaElemento = document.getElementById('despesa-valor');
+
+    saldoElemento.textContent = `R$ ${novoSaldo.toFixed(2)}`;
+    receitaElemento.textContent = `R$ ${receita.toFixed(2)}`;
+    despesaElemento.textContent = `R$ ${despesa.toFixed(2)}`;
+
+    
+    gerarGraficoPizza(receita, despesa);
+}
+
+function salvarValores(tipo) {
+    let novoValor = 0;
+    let descricao = '';
+    let categoria = '';
+    let data = '';
+    let hora = '';
+    let anexo = '';
+
+    if (tipo === 'receita') {
+        novoValor = parseFloat(document.getElementById('valorEdicaoReceita').value) || 0;
+        descricao = document.getElementById('descricaoEdicaoReceita').value.trim();
+        categoria = document.getElementById('categoriaReceita').value;
+        data = document.getElementById('dataEdicaoReceita').value;
+        hora = document.getElementById('horaEdicaoReceita').value;
+        anexo = document.getElementById('anexoEdicaoReceita').value;
+    } else if (tipo === 'despesa') {
+        novoValor = parseFloat(document.getElementById('valorEdicaoDespesa').value) || 0;
+        descricao = document.getElementById('descricaoEdicaoDespesa').value.trim();
+        categoria = document.getElementById('categoriaDespesa').value;
+        data = document.getElementById('dataEdicaoDespesa').value;
+        hora = document.getElementById('horaEdicaoDespesa').value;
+        anexo = document.getElementById('anexoEdicaoDespesa').value;
+    }
+
+    const nomeUsuario = localStorage.getItem('nomeUsuario');
+
+    if (nomeUsuario) {
+        const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
+            saldo: 0.00,
+            receita: 0.00,
+            despesa: 0.00
+        };
+
+        if (tipo === 'receita') {
+            dadosUsuario.receita += novoValor;
+        } else if (tipo === 'despesa') {
+            dadosUsuario.despesa += novoValor;
+        }
+
+        dadosUsuario.saldo = dadosUsuario.receita - dadosUsuario.despesa;
+
+        localStorage.setItem(nomeUsuario, JSON.stringify(dadosUsuario));
+
+        if (tipo === 'receita') {
+            document.getElementById('valorEdicaoReceita').value = '';
+            document.getElementById('descricaoEdicaoReceita').value = '';
+            document.getElementById('dataEdicaoReceita').value = '';
+            document.getElementById('horaEdicaoReceita').value = '';
+            document.getElementById('anexoEdicaoReceita').value = '';
+        } else if (tipo === 'despesa') {
+            document.getElementById('valorEdicaoDespesa').value = '';
+            document.getElementById('descricaoEdicaoDespesa').value = '';
+            document.getElementById('dataEdicaoDespesa').value = '';
+            document.getElementById('horaEdicaoDespesa').value = '';
+            document.getElementById('anexoEdicaoDespesa').value = '';
+        }
+
+        if (tipo === 'receita') {
+            document.getElementById('editarModalReceita').style.display = 'none';
+        } else if (tipo === 'despesa') {
+            document.getElementById('editarModalDespesa').style.display = 'none';
+        }
+
+        carregarHistorico();
+
+        const historico = JSON.parse(localStorage.getItem(`${nomeUsuario}-historico`)) || [];
+        const novaTransacao = {
+            id: new Date().getTime(),
+            tipo: tipo === 'receita' ? 'Receita' : 'Despesa',
+            valor: novoValor,
+            descricao: descricao,
+            data: data,
+            hora: hora,
+            anexo: anexo,
+            dataHora: new Date().toLocaleString(),
+            categoria: categoria
+        };
+        historico.push(novaTransacao);
+        localStorage.setItem(`${nomeUsuario}-historico`, JSON.stringify(historico));
+
+        atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
+    }
+}
+
+function carregarHistorico() {
+    const nomeUsuario = localStorage.getItem('nomeUsuario');
+    const historicoLista = document.getElementById('historico-lista');
+    historicoLista.innerHTML = '';
+
+    if (nomeUsuario) {
+        const chaveHistorico = `${nomeUsuario}-historico`;
+        let historico = JSON.parse(localStorage.getItem(chaveHistorico)) || [];
+
+        historico.sort((a, b) => a.id - b.id);
+
+        historico.forEach(transacao => {
+            const li = document.createElement('li');
+            const dataHoraFormatada = new Date(transacao.dataHora).toLocaleString();
+            li.textContent = `${transacao.tipo}: R$ ${transacao.valor.toFixed(2)} - ${transacao.descricao} (${dataHoraFormatada})`;
+            li.setAttribute('data-id', transacao.id);
+            li.addEventListener('click', exibirDetalhesTransacao);
+            historicoLista.appendChild(li);
+        });
+    }
+}
+
+function exibirDetalhesTransacao(event) {
+    const nomeUsuario = localStorage.getItem('nomeUsuario');
+    if (nomeUsuario) {
+        const chaveHistorico = `${nomeUsuario}-historico`;
+        const historico = JSON.parse(localStorage.getItem(chaveHistorico)) || [];
+        const idTransacao = event.target.getAttribute('data-id');
+        const transacao = historico.find(t => t.id === parseInt(idTransacao));
+
+        if (transacao) {
+            document.getElementById('tipoDetalhe').textContent = transacao.tipo;
+            document.getElementById('valorDetalhe').textContent = `R$ ${transacao.valor.toFixed(2)}`;
+            document.getElementById('descricaoDetalhe').textContent = transacao.descricao;
+            document.getElementById('categoriaDetalhe').textContent = transacao.categoria;
+            document.getElementById('dataDetalhe').textContent = new Date(transacao.dataHora).toLocaleDateString();
+            document.getElementById('horaDetalhe').textContent = transacao.hora;
+
+            if (transacao.anexo) {
+                document.getElementById('anexoDetalhe').textContent = 'Visualizar anexo';
+                document.getElementById('anexoDetalhe').setAttribute('href', transacao.anexo);
+            } else {
+                document.getElementById('anexoDetalhe').textContent = 'Nenhum anexo';
+                document.getElementById('anexoDetalhe').removeAttribute('href');
+            }
+            document.getElementById('detalhesModal').style.display = 'block';
+        } else {
+            console.log('Transação não encontrada com ID:', idTransacao);
+        }
+    }
+}
+
+document.querySelectorAll('.close').forEach(element => {
+    element.addEventListener('click', () => {
+        document.getElementById(element.id.replace('close', '')).style.display = 'none';
+    });
+});
+
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+    }
+};
 
     // Eventos para abrir os modais de edição de Receita e Despesa
         document.getElementById('editarReceita').addEventListener('click', () => {
@@ -448,5 +436,49 @@ document.addEventListener('DOMContentLoaded', function() {
 				fecharModal('editarModalDespesa');
 			}
 		});
+
+		function gerarGraficoPizza(receita = 0, despesa = 0) {
+    const ctx = document.getElementById('grafico-pizza').getContext('2d');
+    const data = {
+        labels: ['Receita', 'Despesa'],
+        datasets: [{
+            label: 'Receita vs Despesa',
+            data: [receita, despesa],
+            backgroundColor: ['#36A2EB', '#FF6384'],
+            hoverBackgroundColor: ['#36A2EB', '#FF6384']
+        }]
+    };
+
+    if (window.myPieChart) {
+        window.myPieChart.destroy();
+    }
+
+    window.myPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: data,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.raw !== null) {
+                                label += `R$ ${context.raw.toFixed(2)}`;
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
 </script>
 </html>

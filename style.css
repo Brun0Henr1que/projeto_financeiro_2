@@ -167,11 +167,12 @@ h2 {
     background-color: #218838;
 }
 
-.graficos{
-    height: 400px;
+.graficos {
+    height: 450px; 
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 40px; 
 }
 
 #reader {
