@@ -8,7 +8,6 @@ const codigoResultado = document.getElementById('valor');
 
 let qrScannerInterval;
 
-// Função para iniciar o scanner de QR code
 function startQrScanner() {
 
     // Define o tamanho do canvas para corresponder ao tamanho do vídeo
@@ -22,7 +21,6 @@ function startQrScanner() {
     // Captura a imagem do canvas como um objeto ImageData
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-    // Usa a biblioteca jsQR para tentar decodificar o QR code na imagem
     const code = jsQR(imageData.data, imageData.width, imageData.height, {
         inversionAttempts: 'dontInvert',
     });
@@ -48,14 +46,12 @@ function startQrScanner() {
     }
 }
 
-// Função para parar o scanner de QR code
 function stopQrScanner() {
     clearTimeout(qrScannerInterval);
     video.style.display = 'none';
     canvas.style.display = 'block';
 }
 
-// Evento do botão para abrir a câmera
 cameraBtn.onclick = function () {
     cameraModal.style.display = 'block';
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
@@ -69,7 +65,6 @@ cameraBtn.onclick = function () {
         });
 };
 
-// Evento para fechar o modal da câmera
 closeCameraModal.onclick = function () {
     cameraModal.style.display = 'none';
     if (video.srcObject) {
@@ -83,7 +78,7 @@ closeCameraModal.onclick = function () {
 };
 
 document.getElementById('detect').onclick = function () {
-    startQrScanner(); // Inicia o scanner de QR code manualmente ao clicar em "Câmera"
+    startQrScanner(); 
     video.style.display = 'none';
     canvas.style.display = 'block';
 };
