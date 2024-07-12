@@ -1,55 +1,89 @@
-const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
-const context = canvas.getContext('2d');
+const  video  =  documento . getElementById ( 'vídeo' ) ;
+const  canvas  =  documento . getElementById ( 'canvas' ) ;
+const  contexto  =  tela . getContext ( '2d' ) ;
+const  cameraBtn  =  documento . getElementById ( 'cameraBtn' ) ;
+const  cameraModal  =  documento . getElementById ( 'cameraModal' ) ;
+const  closeCameraModal  =  documento . getElementById ( 'closeCameraModal' ) ;
+const  codigoResultado  =  document . getElementById ( 'valor' ) ;
 
-const cameraBtn = document.getElementById('cameraBtn');
-const cameraModal = document.getElementById('cameraModal');
-const closeCameraModal = document.getElementById('closeCameraModal');
+deixe  qrScannerInterval ;
 
-cameraBtn.onclick = function () {
-    cameraModal.style.display = "block";
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-        .then((stream) => {
-            video.srcObject = stream;
-            video.play();
-        })
-        .catch((err) => {
-            console.error("Erro ao acessar a câmera: ", err);
-        });
+// Função para iniciar o scanner de QR code
+função  startQrScanner ( )  {
+
+    // Defina o tamanho da tela para corresponder ao tamanho do vídeo
+    tela . largura  =  vídeo . videoWidth ;
+    tela . altura  =  vídeo . videoHeight ;
+
+    // Obter contexto 2D do canvas e desenhar o frame atual do vídeo
+    const  ctx  =  tela . getContext ( '2d' ) ;
+    ctx . drawImage ( vídeo ,  0 ,  0 ,  tela . largura ,  tela . altura ) ;
+
+    // Capturar a imagem do canvas como um objeto ImageData
+    const  imageData  =  ctx . getImageData ( 0 ,  0 ,  canvas . largura ,  canvas . altura ) ;
+
+    // Use a biblioteca jsQR para tentar decodificar o código QR na imagem
+    const  código  =  jsQR ( imageData . dados ,  imageData . largura ,  imageData . altura ,  {
+        inversionAttempts : 'nãoInverter' ,
+    } ) ;
+
+    // Se um QR code for encontrado, exiba seu conteúdo
+    se  ( código )  {
+        pararQrScanner ( ) ;
+        const  response  =  decodificador ( código . dados )
+        codigoResultado . textContent  =  'Valor: '  +  response [ 'Valor da transação' ] ;
+        const  addicionar_despesa  =  document . getElementById ( 'add_despesa' ) ;
+        const  editarDespesa  =  document . getElementById ( 'editarDespesa' ) ;
+        const  valorEdicao  =  document . getElementById ( 'valorEdicao' ) ;
+        adicionar_despesa . addEventListener ( 'clique' ,  ( ) => {
+            closeCameraModal . clique ( )
+            editarDespesa . clique ( )
+            valorEdicao . value  =  parseFloat ( response [ 'Valor da transação' ] ) ;
+        } )
+    }  outro  {
+        // Se não encontrar, continua verificando em curtos intervalos
+        qrScannerInterval  =  definirTempo limite ( iniciarQrScanner ,  200 ) ;
+        vídeo . estilo . exibição  =  'bloco' ;
+        tela . estilo . exibição  =  'nenhum' ;
+    }
 }
 
-// closeCameraModal.onclick = function () {
-//     cameraModal.style.display = "none";
-// }
+// Função para parar o scanner de QR code
+função  stopQrScanner ( )  {
+    clearTimeout ( qrScannerInterval ) ;
+    vídeo . estilo . exibição  =  'nenhum' ;
+    tela . estilo . exibição  =  'bloco' ;
+}
 
-document.getElementById('closeCameraModal').onclick = function() {
-    document.getElementById('cameraModal').style.display = "none";
-    const video = document.getElementById('video');
-    if (video.srcObject) {
-        const stream = video.srcObject;
-        const tracks = stream.getTracks();
+// Evento do botão para abrir a câmera
+cameraBtn . onclick  =  função  ( )  {
+    cameraModal . estilo . exibição  =  ' bloco ' ;
+    navegador . mediaDevices . getUserMedia ( {  vídeo : {  facingMode : ' ambiente '  }  } )
+        . então ( ( fluxo )  =>  {
+            vídeo . srcObject  =  fluxo ;
+            vídeo . reproduzir ( ) ;
+            // iniciarQrScanner(); // Inicia o scanner de QR code para abrir a câmera
+        } )
+        . pegar ( ( erro )  =>  {
+            console . erro ( ' Erro ao acessar a câmera: ' ,  err ) ;
+        } ) ;
+} ;
 
-        tracks.forEach(function(track) {
-            track.stop();
-        });
-
-        video.srcObject = null;
+// Evento para fechar o modal da câmera
+closeCameraModal . onclick = função ( ) {    
+    cameraModal . estilo . exibição = 'nenhum' ;  
+    se  ( vídeo . srcObject )  {
+        const  stream  =  vídeo . srcObject ;
+        const  faixas  =  fluxo . getTracks ( ) ;
+        trilhas . forEach ( função  ( trilha )  {
+            rastrear . parar ( ) ;
+        } ) ;
+        vídeo . srcObject  =  nulo ;
     }
-};
+} ;
 
-document.getElementById('detect').onclick = function() {
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const context = canvas.getContext('2d');
-
-    // Define o tamanho do canvas para corresponder ao tamanho do vídeo
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    // Desenha o frame atual do vídeo no canvas
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    // Oculta o vídeo e exibe o canvas
-    video.style.display = 'none';
-    canvas.style.display = 'block';
-};
+documento . getElementById ( 'detectar' ) . onclick  =  função  ( )  {
+    iniciarQrScanner ( ) ;  // Inicia o scanner de QR code continuamente ao clicar em "Câmera"
+    vídeo . estilo . exibição  =  'nenhum' ;
+    tela . estilo . exibição  =  'bloco' ;
+} ;
