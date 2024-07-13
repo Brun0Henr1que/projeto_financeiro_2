@@ -287,6 +287,23 @@ function salvarValores(tipo) {
             document.getElementById('anexoEdicaoDespesa').value = '';
         }
 
+	// Convertendo a data para um objeto Date
+	    try {
+	        let dataObj = new Date(data);
+	
+	        if (isNaN(dataObj.getTime())) {
+	            console.error("Data inválida:", data);
+	            return;  // Encerrar a função se a data for inválida
+	        }
+	
+	        // Continuar com o processamento dos dados
+	        const nomeUsuario = localStorage.getItem('nomeUsuario');
+	        // Restante do seu código...
+	    } catch (error) {
+	        console.error("Erro ao converter data:", error.message);
+	        return;  // Tratar o erro adequadamente
+	    }
+
         if (tipo === 'receita') {
             document.getElementById('editarModalReceita').style.display = 'none';
         } else if (tipo === 'despesa') {
