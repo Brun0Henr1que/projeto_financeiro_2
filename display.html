@@ -254,6 +254,8 @@ function salvarValores(tipo) {
         anexo = document.getElementById('anexoEdicaoDespesa').value;
     }
 
+ // Tratamento da data para garantir o formato adequado antes de salvar
+    const dataFormatada = data ? new Date(data).toISOString().split('T')[0] : '';
 
     const nomeUsuario = localStorage.getItem('nomeUsuario');
 
