@@ -6,8 +6,8 @@
 		<title>Finança Total</title>
 		<link rel="stylesheet" href="style.css">
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-		<script src="https://unpkg.com/html5-qrcode@latest"></script>
 		<link rel="manifest" href="manifest.json">
+        <script src="jsQR.js"></script>
 	</head>
 <body>
 
@@ -143,6 +143,7 @@
         <div class="modal-content">
             <span class="close" id="closeCameraModal">&times;</span>
             <h2>Leitor de Código de Barras</h2>
+            <p id="valor">Posicione o QRcode</p>
             <div id="reader" style="width:100%">
                 <video src="" id="video" autoplay></video>
                 <canvas id="canvas">
@@ -150,6 +151,7 @@
                 </canvas>
             </div>
             <button id="detect">Capturar</button>
+            <button id="add_despesa">Adicionar Despesa</button>
         </div>
     </div>
 	
@@ -157,7 +159,8 @@
 
 
 <script src="app.js"></script>
-<script src="camera.js"></script>
+<script src="camera.mjs" type="module"></script>
+<script src="decoder-qr-code.js" type="module"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     exibirNomeUsuario();
