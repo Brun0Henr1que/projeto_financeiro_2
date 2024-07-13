@@ -243,17 +243,34 @@ function salvarValores(tipo) {
         descricao = document.getElementById('descricaoEdicaoReceita').value.trim();
         categoria = document.getElementById('categoriaReceita').value;
         data = document.getElementById('dataEdicaoReceita').value;
-        hora = document.getElementById('horaEdicaoReceita').value;
+        hora = document.getElementById('horaEdicaoReceita').value.trim();
         anexo = document.getElementById('anexoEdicaoReceita').value;
     } else if (tipo === 'despesa') {
         novoValor = parseFloat(document.getElementById('valorEdicaoDespesa').value) || 0;
         descricao = document.getElementById('descricaoEdicaoDespesa').value.trim();
         categoria = document.getElementById('categoriaDespesa').value;
-        data = document.getElementById('dataEdicaoDespesa').value;
+        data = document.getElementById('dataEdicaoDespesa').value.trim();
         hora = document.getElementById('horaEdicaoDespesa').value;
         anexo = document.getElementById('anexoEdicaoDespesa').value;
     }
 
+	// Convertendo a data para um objeto Date
+	    try {
+	        let dataObj = new Date(data);
+	
+	        if (isNaN(dataObj.getTime())) {
+	            console.error("Data inválida:", data);
+	            return;  // Encerrar a função se a data for inválida
+	        }
+	
+	        // Continuar com o processamento dos dados
+	        const nomeUsuario = localStorage.getItem('nomeUsuario');
+	        // Restante do seu código...
+	    } catch (error) {
+	        console.error("Erro ao converter data:", error.message);
+	        return;  // Tratar o erro adequadamente
+	    }
+	
     const nomeUsuario = localStorage.getItem('nomeUsuario');
 
     if (nomeUsuario) {
@@ -286,23 +303,6 @@ function salvarValores(tipo) {
             document.getElementById('horaEdicaoDespesa').value = '';
             document.getElementById('anexoEdicaoDespesa').value = '';
         }
-
-	// Convertendo a data para um objeto Date
-	    try {
-	        let dataObj = new Date(data);
-	
-	        if (isNaN(dataObj.getTime())) {
-	            console.error("Data inválida:", data);
-	            return;  // Encerrar a função se a data for inválida
-	        }
-	
-	        // Continuar com o processamento dos dados
-	        const nomeUsuario = localStorage.getItem('nomeUsuario');
-	        // Restante do seu código...
-	    } catch (error) {
-	        console.error("Erro ao converter data:", error.message);
-	        return;  // Tratar o erro adequadamente
-	    }
 
         if (tipo === 'receita') {
             document.getElementById('editarModalReceita').style.display = 'none';
