@@ -11,7 +11,7 @@ if ('serviceWorker' in navigator) {
 
 function agendarNotificacaoDiaria() {
     // Define o horário desejado para a notificação (21:00 no fuso horário local)
-    const horarioDesejado = { hour: 19, minute: 39, second: 0 };
+    const horarioDesejado = { hour: 20, minute: 0, second: 0 };
 
     // Função para calcular o tempo até o próximo horário desejado
     function calcularTempoAteProximoHorarioDesejado() {
