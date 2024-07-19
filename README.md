@@ -30,4 +30,4 @@ Para mais testes: [Projeto Hospedado no GITHUB pages](https://brun0henr1que.gith
 
 #### Histórico
 <img src="./imagens/historico.png"> 
-<img src="./imagens/detalhamento_historico.png">
+<img src="./imagens/detalhe_historico.png">
