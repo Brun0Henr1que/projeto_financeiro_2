@@ -10,6 +10,7 @@ Para mais testes: [Projeto Hospedado no GITHUB pages](https://brun0henr1que.gith
 
 - Gravação de receita/despesa com detalhamento, data e hora.
 - Uso da câmera do smartphone ou webcam para ler valores de QRcodes.
+- Notificação push.
 - Geração de gráficos de balanço entre receita e despesa.
 - Geração de histórico detalhado para registro das informações inseridas.
 
