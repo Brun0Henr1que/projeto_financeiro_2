@@ -11,12 +11,17 @@
         <script src="jsQR.js"></script>
 	</head>
 <body>
+
+<!-- Logo -->
 	<div class="logo">
         <div class="header">
             <img src="imagens\logo.png">
         </div>
 	</div>
+	
+<!-- Container com a aplicação -->	
     <div class="container">
+	<!-- Boas vindas e valores -->	
         <div class="header">
             <h1>Bem vindo, <span id="nomeUsuarioDisplay"></span>!</h1>
         </div>
@@ -38,6 +43,7 @@
             </div>
         </div>
 		
+<!-- Botões -->
         <div class="menu">
             <div class="dropdown">
                 <button class="dropbtn">Adicionar</button>
@@ -46,15 +52,16 @@
                     <a href="#" id="editarDespesa">Despesa</a>
                 </div>
             </div>
-<!--           <button id="limparDados">Limpar Dados</button> --> <!-- Botão para limpar todos os dados -->
+<!-- <button id="limparDados">Limpar Dados</button> --> <!-- Botão para limpar todos os dados -->
         </div>
 		
+<!-- Gráficos -->		
         <div class="graficos">
 			<h2>Gráficos de Gastos</h2>
 			<canvas id="grafico-pizza"></canvas>
 		</div>
 		
-		
+<!-- Lista de histórico -->			
         <div class="historico">
             <h2>Histórico</h2>
             <ul id="historico-lista">
@@ -78,7 +85,7 @@
 		</div>
 	</div>
 	
-	<!-- Modal para editar Receita -->
+<!-- Modal para editar Receita -->
 	<div id="editarModalReceita" class="modal">
 		<div class="modal-content">
 			<span class="close" id="closeEditarModalReceita">&times;</span>
@@ -110,7 +117,7 @@
 		</div>
 	</div>
 
-	<!-- Modal para editar Despesa -->
+<!-- Modal para editar Despesa -->
 	<div id="editarModalDespesa" class="modal">
 		<div class="modal-content">
 			<span class="close" id="closeEditarModalDespesa">&times;</span>
@@ -143,7 +150,7 @@
 		</div>
 	</div>
     
-    <!-- Modal para câmera -->
+ <!-- Modal para câmera -->
     <div id="cameraModal" class="modal">
         <div class="modal-content">
             <span class="close" id="closeCameraModal">&times;</span>
@@ -167,11 +174,12 @@
 <script src="camera.mjs" type="module"></script>
 <script src="decoder-qr-code.js" type="module"></script>
 <script>
+
 document.addEventListener('DOMContentLoaded', function() {
     exibirNomeUsuario();
     carregarValores();
     carregarHistorico();
-    gerarGraficoPizza();
+
 });
 /*		
 	// Função para limpar todos os dados do usuário
@@ -197,328 +205,359 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		});
 */
-    // Função para exibir o nome do usuário
+
+// Função para exibir o nome do usuário
 	function exibirNomeUsuario() {
-    const nomeUsuario = localStorage.getItem('nomeUsuario');
-    if (nomeUsuario) {
-        document.getElementById('nomeUsuarioDisplay').textContent = nomeUsuario;
-    } else {
-        document.getElementById('nomeUsuarioDisplay').textContent = 'Usuário';
-    }
-}
-
-function carregarValores() {
-    const nomeUsuario = localStorage.getItem('nomeUsuario');
-    if (nomeUsuario) {
-        const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
-            saldo: 0.00,
-            receita: 0.00,
-            despesa: 0.00
-        };
-        atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
-    } else {
-        atualizarValores(0.00, 0.00, 0.00);
-    }
-}
-
-function atualizarValores(saldo, receita, despesa) {
-    const novoSaldo = receita - despesa;
-    const saldoElemento = document.getElementById('saldo-valor');
-    const receitaElemento = document.getElementById('receita-valor');
-    const despesaElemento = document.getElementById('despesa-valor');
-
-    saldoElemento.textContent = `R$ ${novoSaldo.toFixed(2)}`;
-    receitaElemento.textContent = `R$ ${receita.toFixed(2)}`;
-    despesaElemento.textContent = `R$ ${despesa.toFixed(2)}`;
-
-    
-    gerarGraficoPizza(receita, despesa);
-}
-
-function salvarValores(tipo) {
-    let novoValor = 0;
-    let descricao = '';
-    let categoria = '';
-    let data = '';
-    let hora = '';
-    let anexo = '';
-
-    if (tipo === 'receita') {
-        novoValor = parseFloat(document.getElementById('valorEdicaoReceita').value) || 0;
-        descricao = document.getElementById('descricaoEdicaoReceita').value.trim();
-        categoria = document.getElementById('categoriaReceita').value;
-        data = document.getElementById('dataEdicaoReceita').value;
-        hora = document.getElementById('horaEdicaoReceita').value;
-        anexo = document.getElementById('anexoEdicaoReceita').value;
-    } else if (tipo === 'despesa') {
-        novoValor = parseFloat(document.getElementById('valorEdicaoDespesa').value) || 0;
-        descricao = document.getElementById('descricaoEdicaoDespesa').value.trim();
-        categoria = document.getElementById('categoriaDespesa').value;
-        data = document.getElementById('dataEdicaoDespesa').value;
-        hora = document.getElementById('horaEdicaoDespesa').value;
-        anexo = document.getElementById('anexoEdicaoDespesa').value;
-    }
-
-
-	
-	 if (data) {
-        const dataParts = data.split('-');
-        if (dataParts.length === 3) {
-            // Formato correto: YYYY-MM-DD
-            const dataFormatada = `${dataParts[0]}-${dataParts[1]}-${dataParts[2]}`;
-            const dataValidada = new Date(dataFormatada);
-            if (isNaN(dataValidada.getTime())) {
-                console.error('Data inválida:', data);
-                return; // Saia da função se a data for inválida
-            }
-        } else {
-            console.error('Formato inválido de data:', data);
-            return; // Saia da função se o formato da data estiver incorreto
-        }
-    }
-	
-    const nomeUsuario = localStorage.getItem('nomeUsuario');
-
-    if (nomeUsuario) {
-        const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
-            saldo: 0.00,
-            receita: 0.00,
-            despesa: 0.00
-        };
-
-        if (tipo === 'receita') {
-            dadosUsuario.receita += novoValor;
-        } else if (tipo === 'despesa') {
-            dadosUsuario.despesa += novoValor;
-        }
-
-        dadosUsuario.saldo = dadosUsuario.receita - dadosUsuario.despesa;
-
-        localStorage.setItem(nomeUsuario, JSON.stringify(dadosUsuario));
-
-        if (tipo === 'receita') {
-            document.getElementById('valorEdicaoReceita').value = '';
-            document.getElementById('descricaoEdicaoReceita').value = '';
-            document.getElementById('dataEdicaoReceita').value = '';
-            document.getElementById('horaEdicaoReceita').value = '';
-            document.getElementById('anexoEdicaoReceita').value = '';
-        } else if (tipo === 'despesa') {
-            document.getElementById('valorEdicaoDespesa').value = '';
-            document.getElementById('descricaoEdicaoDespesa').value = '';
-            document.getElementById('dataEdicaoDespesa').value = '';
-            document.getElementById('horaEdicaoDespesa').value = '';
-            document.getElementById('anexoEdicaoDespesa').value = '';
-        }
-
-        if (tipo === 'receita') {
-            document.getElementById('editarModalReceita').style.display = 'none';
-        } else if (tipo === 'despesa') {
-            document.getElementById('editarModalDespesa').style.display = 'none';
-        }
-
-        carregarHistorico();
-
-        const historico = JSON.parse(localStorage.getItem(`${nomeUsuario}-historico`)) || [];
-        const novaTransacao = {
-            id: new Date().getTime(),
-            tipo: tipo === 'receita' ? 'Receita' : 'Despesa',
-            valor: novoValor,
-            descricao: descricao,
-            data: data,
-            hora: hora,
-            anexo: anexo,
-            dataHora: new Date().toLocaleString(),
-            categoria: categoria
-        };
-        historico.push(novaTransacao);
-        localStorage.setItem(`${nomeUsuario}-historico`, JSON.stringify(historico));
-
-        atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
-    }
-}
-
-function formatarData(data) {
-    if (!data) return '';
-
-    const dataParts = data.split('-');
-    if (dataParts.length !== 3) return data; // Retorna a data original se não estiver no formato esperado
-
-    const [ano, mes, dia] = dataParts;
-    return `${dia}/${mes}/${ano}`;
-	
-	const dataExemplo = '2024-07-19'; // Data exemplo no formato ISO (YYYY-MM-DD)
-	const dataFormatada = formatarData(dataExemplo);
-	console.log(dataFormatada); // Saída esperada: '19/07/2024'
-}
-
-function carregarHistorico() {
-    const nomeUsuario = localStorage.getItem('nomeUsuario');
-    const historicoLista = document.getElementById('historico-lista');
-    historicoLista.innerHTML = '';
-
-    if (nomeUsuario) {
-        const chaveHistorico = `${nomeUsuario}-historico`;
-        let historico = JSON.parse(localStorage.getItem(chaveHistorico)) || [];
-
-        historico.sort((a, b) => a.id - b.id);
-
-        historico.forEach(transacao => {
-            const li = document.createElement('li');
-            const dataHoraFormatada = new Date(transacao.dataHora).toLocaleString();
-            li.textContent = `${transacao.tipo}: R$ ${transacao.valor.toFixed(2)} - ${transacao.descricao} (${dataHoraFormatada})`;
-            li.setAttribute('data-id', transacao.id);
-            li.addEventListener('click', exibirDetalhesTransacao);
-            historicoLista.appendChild(li);
-        });
-    }
-}
-
-function exibirDetalhesTransacao(event) {
-    const nomeUsuario = localStorage.getItem('nomeUsuario');
-    if (nomeUsuario) {
-        const chaveHistorico = `${nomeUsuario}-historico`;
-        const historico = JSON.parse(localStorage.getItem(chaveHistorico)) || [];
-        const idTransacao = event.target.getAttribute('data-id');
-        const transacao = historico.find(t => t.id === parseInt(idTransacao));
-
-        if (transacao) {
-            document.getElementById('tipoDetalhe').textContent = transacao.tipo;
-            document.getElementById('valorDetalhe').textContent = `R$ ${transacao.valor.toFixed(2)}`;
-            document.getElementById('descricaoDetalhe').textContent = transacao.descricao;
-            document.getElementById('categoriaDetalhe').textContent = transacao.categoria;
-            document.getElementById('dataDetalhe').textContent = formatarData(transacao.data);
-            document.getElementById('horaDetalhe').textContent = transacao.hora;
-
-            if (transacao.anexo) {
-                document.getElementById('anexoDetalhe').textContent = 'Visualizar anexo';
-                document.getElementById('anexoDetalhe').setAttribute('href', transacao.anexo);
-            } else {
-                document.getElementById('anexoDetalhe').textContent = 'Nenhum anexo';
-                document.getElementById('anexoDetalhe').removeAttribute('href');
-            }
-            document.getElementById('detalhesModal').style.display = 'block';
-        } else {
-            console.log('Transação não encontrada com ID:', idTransacao);
-        }
-    }
-}
-
-document.querySelectorAll('.close').forEach(element => {
-    element.addEventListener('click', () => {
-        document.getElementById(element.id.replace('close', '')).style.display = 'none';
-    });
-});
-
-window.onclick = function(event) {
-    if (event.target.classList.contains('modal')) {
-        event.target.style.display = 'none';
-    }
-};
-
-    // Eventos para abrir os modais de edição de Receita e Despesa
-        document.getElementById('editarReceita').addEventListener('click', () => {
-            document.getElementById('editarModalReceita').style.display = 'block';
-        });
-
-        document.getElementById('editarDespesa').addEventListener('click', () => {
-            document.getElementById('editarModalDespesa').style.display = 'block';
-        });
-
-    // Eventos para salvar os valores editados de Receita e Despesa
-        document.getElementById('salvarValoresReceita').addEventListener('click', () => {
-            salvarValores('receita');
-        });
-
-        document.getElementById('salvarValoresDespesa').addEventListener('click', () => {
-            salvarValores('despesa');
-        });
-		
-	// Função para fechar modal
-		function fecharModal(idModal) {
-			document.getElementById(idModal).style.display = 'none';
+		const nomeUsuario = localStorage.getItem('nomeUsuario');
+		if (nomeUsuario) {
+			document.getElementById('nomeUsuarioDisplay').textContent = nomeUsuario;
+		} else {
+			document.getElementById('nomeUsuarioDisplay').textContent = 'Usuário';
 		}
+	}
 
-	// Eventos para fechar o modal ao clicar no 'X' e fora do modal
-		document.querySelectorAll('.close').forEach(element => {
-			element.addEventListener('click', () => {
-				fecharModal(element.parentElement.parentElement.id);
-			});
-		});
+// Função para carregar os valores do usuário
+	function carregarValores() {
+		const nomeUsuario = localStorage.getItem('nomeUsuario');
+		if (nomeUsuario) {
+			const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
+				saldo: 0.00,
+				receita: 0.00,
+				despesa: 0.00
+			};
+			atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
+			gerarGraficoPizza(dadosUsuario.receita, dadosUsuario.despesa); // Chama gerarGraficoPizza com os dados iniciais
+		} else {
+			atualizarValores(0.00, 0.00, 0.00);
+			gerarGraficoPizza(0.00, 0.00); // Chama gerarGraficoPizza com valores padrão se não houver dados do usuário
+		}
+	}
 
-		window.onclick = function(event) {
-			if (event.target.classList.contains('modal')) {
-				fecharModal(event.target.id);
+// Função para atualizar os valores do usuário e no gráfico
+	function atualizarValores(saldo, receita, despesa) {
+		const novoSaldo = receita - despesa;
+		const saldoElemento = document.getElementById('saldo-valor');
+		const receitaElemento = document.getElementById('receita-valor');
+		const despesaElemento = document.getElementById('despesa-valor');
+
+		saldoElemento.textContent = `R$ ${novoSaldo.toFixed(2)}`;
+		receitaElemento.textContent = `R$ ${receita.toFixed(2)}`;
+		despesaElemento.textContent = `R$ ${despesa.toFixed(2)}`;
+		
+		gerarGraficoPizza(receita, despesa);
+	}
+
+	function salvarValores(tipo) {
+	// Declaração e inicialização das variáveis para armazenar os valores a serem salvos
+		let novoValor = 0;
+		let descricao = '';
+		let categoria = '';
+		let data = '';
+		let hora = '';
+		let anexo = '';
+
+	// Verifica o tipo de transação (receita ou despesa) e obtém os valores dos campos correspondentes
+		if (tipo === 'receita') {
+			novoValor = parseFloat(document.getElementById('valorEdicaoReceita').value) || 0;
+			descricao = document.getElementById('descricaoEdicaoReceita').value.trim();
+			categoria = document.getElementById('categoriaReceita').value;
+			data = document.getElementById('dataEdicaoReceita').value;
+			hora = document.getElementById('horaEdicaoReceita').value;
+			anexo = document.getElementById('anexoEdicaoReceita').value;
+		} else if (tipo === 'despesa') {
+			novoValor = parseFloat(document.getElementById('valorEdicaoDespesa').value) || 0;
+			descricao = document.getElementById('descricaoEdicaoDespesa').value.trim();
+			categoria = document.getElementById('categoriaDespesa').value;
+			data = document.getElementById('dataEdicaoDespesa').value;
+			hora = document.getElementById('horaEdicaoDespesa').value;
+			anexo = document.getElementById('anexoEdicaoDespesa').value;
+		}
+	 	
+	// Obtém o nome do usuário armazenado no localStorage
+		const nomeUsuario = localStorage.getItem('nomeUsuario');
+
+	 // Verifica se o nome do usuário foi encontrado no armazenamento local
+		if (nomeUsuario) {
+		// Obtém os dados do usuário do localStorage ou inicializa com valores padrão
+			const dadosUsuario = JSON.parse(localStorage.getItem(nomeUsuario)) || {
+				saldo: 0.00,
+				receita: 0.00,
+				despesa: 0.00
+			};
+
+		// Atualiza os valores de receita ou despesa, conforme o tipo de transação
+			if (tipo === 'receita') {
+				dadosUsuario.receita += novoValor;
+			} else if (tipo === 'despesa') {
+				dadosUsuario.despesa += novoValor;
 			}
+
+		// Calcula o novo saldo do usuário
+			dadosUsuario.saldo = dadosUsuario.receita - dadosUsuario.despesa;
+			
+		// Armazena os dados atualizados do usuário de volta no localStorage
+			localStorage.setItem(nomeUsuario, JSON.stringify(dadosUsuario));
+
+		// Limpa os campos de entrada após salvar os valores
+			if (tipo === 'receita') {
+				document.getElementById('valorEdicaoReceita').value = '';
+				document.getElementById('descricaoEdicaoReceita').value = '';
+				document.getElementById('dataEdicaoReceita').value = '';
+				document.getElementById('horaEdicaoReceita').value = '';
+				document.getElementById('anexoEdicaoReceita').value = '';
+			} else if (tipo === 'despesa') {
+				document.getElementById('valorEdicaoDespesa').value = '';
+				document.getElementById('descricaoEdicaoDespesa').value = '';
+				document.getElementById('dataEdicaoDespesa').value = '';
+				document.getElementById('horaEdicaoDespesa').value = '';
+				document.getElementById('anexoEdicaoDespesa').value = '';
+			}
+
+		// Esconde o modal de edição após salvar os valores
+			if (tipo === 'receita') {
+				document.getElementById('editarModalReceita').style.display = 'none';
+			} else if (tipo === 'despesa') {
+				document.getElementById('editarModalDespesa').style.display = 'none';
+			}
+			
+		// Atualiza o histórico de transações do usuário
+			carregarHistorico();
+			
+		// Obtém o histórico de transações do localStorage ou inicializa como um array vazio
+			const historico = JSON.parse(localStorage.getItem(`${nomeUsuario}-historico`)) || [];
+			
+		// Cria um objeto representando a nova transação a ser adicionada ao histórico
+			const novaTransacao = {
+				id: new Date().getTime(),
+				tipo: tipo === 'receita' ? 'Receita' : 'Despesa',
+				valor: novoValor,
+				descricao: descricao,
+				data: data,
+				hora: hora,
+				anexo: anexo,
+				dataHora: new Date().toLocaleString(),
+				categoria: categoria
+			};
+			
+		// Adiciona a nova transação ao histórico
+			historico.push(novaTransacao);
+			
+		// Armazena o histórico atualizado de transações no localStorage
+			localStorage.setItem(`${nomeUsuario}-historico`, JSON.stringify(historico));
+		
+		// Atualiza os valores exibidos na interface do usuário com o novo saldo, receita e despesa
+			atualizarValores(dadosUsuario.saldo, dadosUsuario.receita, dadosUsuario.despesa);
+		}
+	}
+
+	function formatarData(data) {
+		if (!data) return '';
+
+		const dataParts = data.split('-');
+		if (dataParts.length !== 3) return data; // Retorna a data original se não estiver no formato esperado
+
+		const [ano, mes, dia] = dataParts;
+		return `${dia}/${mes}/${ano}`;
+		
+		const dataExemplo = '2024-07-19'; // Data exemplo no formato ISO (YYYY-MM-DD)
+		const dataFormatada = formatarData(dataExemplo);
+		console.log(dataFormatada); // Saída esperada: '19/07/2024'
+	}
+
+	function carregarHistorico() {
+		const nomeUsuario = localStorage.getItem('nomeUsuario');
+		const historicoLista = document.getElementById('historico-lista');
+		
+	// Limpa o conteúdo atual da lista de histórico
+		historicoLista.innerHTML = '';
+
+		if (nomeUsuario) {
+		// Cria a chave para acessar o histórico específico do usuário no localStorage
+			const chaveHistorico = `${nomeUsuario}-historico`;
+			let historico = JSON.parse(localStorage.getItem(chaveHistorico)) || [];
+			
+		// Ordena o histórico por ordem crescente de IDs de transação
+			historico.sort((a, b) => a.id - b.id);
+
+			historico.forEach(transacao => {
+			
+		// Verifica se a transação possui os campos necessários para exibição	
+			if (transacao.tipo && transacao.valor !== undefined && transacao.descricao) {
+			// Cria um elemento <li> para representar a transação na lista
+				const li = document.createElement('li');
+				
+			// Formata a data e hora da transação para exibição
+				const dataHoraFormatada = transacao.dataHora;
+				li.textContent = `${transacao.tipo}: R$ ${transacao.valor.toFixed(2)} - ${transacao.descricao} (${dataHoraFormatada})`;
+				li.setAttribute('data-id', transacao.id);
+				
+			// Adiciona um event listener para exibir detalhes da transação ao clicar
+				li.addEventListener('click', exibirDetalhesTransacao);
+				
+			// Adiciona o <li> à lista de histórico na interface
+				historicoLista.appendChild(li);
+			}
+			});
+		}
+	}
+
+	function exibirDetalhesTransacao(event) {
+		const nomeUsuario = localStorage.getItem('nomeUsuario');
+		
+	// Verifica se o nome do usuário existe no armazenamento local
+		if (nomeUsuario) {
+			const chaveHistorico = `${nomeUsuario}-historico`;
+			const historico = JSON.parse(localStorage.getItem(chaveHistorico)) || [];
+			const idTransacao = event.target.getAttribute('data-id');
+			const transacao = historico.find(t => t.id === parseInt(idTransacao));
+			
+		 // Verifica se a transação foi encontrada com o ID fornecido
+			if (transacao) {
+			// Preenche os detalhes da transação nos elementos HTML correspondentes na interface
+				document.getElementById('tipoDetalhe').textContent = transacao.tipo;
+				document.getElementById('valorDetalhe').textContent = `R$ ${transacao.valor.toFixed(2)}`;
+				document.getElementById('descricaoDetalhe').textContent = transacao.descricao;
+				document.getElementById('categoriaDetalhe').textContent = transacao.categoria;
+				document.getElementById('dataDetalhe').textContent = formatarData(transacao.data);
+				document.getElementById('horaDetalhe').textContent = transacao.hora;
+			
+			// Verifica se há um anexo associado à transação
+				if (transacao.anexo) {
+					document.getElementById('anexoDetalhe').textContent = 'Visualizar anexo';
+					document.getElementById('anexoDetalhe').setAttribute('href', transacao.anexo);
+				} else {
+					document.getElementById('anexoDetalhe').textContent = 'Nenhum anexo';
+					document.getElementById('anexoDetalhe').removeAttribute('href');
+				}
+				document.getElementById('detalhesModal').style.display = 'block';
+			} else {
+				console.log('Transação não encontrada com ID:', idTransacao);
+			}
+		}
+	}
+	
+// Fechamento de Modais por Botões de Fechar
+	document.querySelectorAll('.close').forEach(element => {
+		element.addEventListener('click', () => {
+			document.getElementById(element.id.replace('close', '')).style.display = 'none';
+		});
+	});
+
+// Fechamento de Modais por Clique Fora do Modal
+	window.onclick = function(event) {
+		if (event.target.classList.contains('modal')) {
+			event.target.style.display = 'none';
+		}
+	};
+
+// Eventos para abrir os modais de edição de Receita e Despesa
+    document.getElementById('editarReceita').addEventListener('click', () => {
+        document.getElementById('editarModalReceita').style.display = 'block';
+    });
+
+    document.getElementById('editarDespesa').addEventListener('click', () => {
+        document.getElementById('editarModalDespesa').style.display = 'block';
+    });
+
+// Eventos para salvar os valores editados de Receita e Despesa
+    document.getElementById('salvarValoresReceita').addEventListener('click', () => {
+        salvarValores('receita');
+    });
+
+    document.getElementById('salvarValoresDespesa').addEventListener('click', () => {
+        salvarValores('despesa');
+    });
+		
+// Função para fechar modal
+	function fecharModal(idModal) {
+		document.getElementById(idModal).style.display = 'none';
+	}
+
+// Eventos para fechar o modal ao clicar no 'X' e fora do modal
+	document.querySelectorAll('.close').forEach(element => {
+		element.addEventListener('click', () => {
+			fecharModal(element.parentElement.parentElement.id);
+		});
+	});
+
+	window.onclick = function(event) {
+		if (event.target.classList.contains('modal')) {
+			fecharModal(event.target.id);
+		}
+	};
+
+// Eventos para abrir os modais de edição de Receita e Despesa
+	document.getElementById('editarReceita').addEventListener('click', () => {
+		document.getElementById('editarModalReceita').style.display = 'block';
+	});
+
+	document.getElementById('editarDespesa').addEventListener('click', () => {
+		document.getElementById('editarModalDespesa').style.display = 'block';
+	});
+
+// Eventos para salvar os valores editados de Receita e Despesa
+	document.getElementById('salvarValoresReceita').addEventListener('click', () => {
+		salvarValores('receita');
+	});
+
+	document.getElementById('salvarValoresDespesa').addEventListener('click', () => {
+		salvarValores('despesa');
+	});
+
+// Eventos para fechar o modal ao pressionar "Esc"
+	document.addEventListener('keydown', function(event) {
+		if (event.key === 'Escape') {
+			fecharModal('editarModalReceita');
+			fecharModal('editarModalDespesa');
+		}
+	});
+
+	function gerarGraficoPizza(receita = 0, despesa = 0) {
+		const ctx = document.getElementById('grafico-pizza').getContext('2d');
+	// Calculando saldo para determinar receita e despesa padrão
+		receita = receita || 0;
+		despesa = despesa || 0;
+	
+		const data = {
+			labels: ['Receita', 'Despesa'],
+			datasets: [{
+				label: 'Receita vs Despesa',
+				data: [receita, despesa],
+				backgroundColor: ['#36A2EB', '#FF6384'],
+				hoverBackgroundColor: ['#36A2EB', '#FF6384']
+			}]
 		};
 
-	// Eventos para abrir os modais de edição de Receita e Despesa
-		document.getElementById('editarReceita').addEventListener('click', () => {
-			document.getElementById('editarModalReceita').style.display = 'block';
-		});
+		if (window.myPieChart) {
+			window.myPieChart.destroy();
+		}
 
-		document.getElementById('editarDespesa').addEventListener('click', () => {
-			document.getElementById('editarModalDespesa').style.display = 'block';
-		});
-
-	// Eventos para salvar os valores editados de Receita e Despesa
-		document.getElementById('salvarValoresReceita').addEventListener('click', () => {
-			salvarValores('receita');
-		});
-
-		document.getElementById('salvarValoresDespesa').addEventListener('click', () => {
-			salvarValores('despesa');
-		});
-
-	// Eventos para fechar o modal ao pressionar "Esc"
-		document.addEventListener('keydown', function(event) {
-			if (event.key === 'Escape') {
-				fecharModal('editarModalReceita');
-				fecharModal('editarModalDespesa');
+		window.myPieChart = new Chart(ctx, {
+			type: 'pie',
+			data: data,
+			options: {
+				responsive: true,
+				plugins: {
+					legend: {
+						position: 'top',
+					},
+					tooltip: {
+						callbacks: {
+							label: function(context) {
+								let label = context.label || '';
+								if (label) {
+									label += ': ';
+								}
+								if (context.raw !== null) {
+									label += `R$ ${context.raw.toFixed(2)}`;
+								}
+								return label;
+							}
+						}
+					}
+				}
 			}
 		});
-
-		function gerarGraficoPizza(receita = 0, despesa = 0) {
-    const ctx = document.getElementById('grafico-pizza').getContext('2d');
-    const data = {
-        labels: ['Receita', 'Despesa'],
-        datasets: [{
-            label: 'Receita vs Despesa',
-            data: [receita, despesa],
-            backgroundColor: ['#36A2EB', '#FF6384'],
-            hoverBackgroundColor: ['#36A2EB', '#FF6384']
-        }]
-    };
-
-    if (window.myPieChart) {
-        window.myPieChart.destroy();
-    }
-
-    window.myPieChart = new Chart(ctx, {
-        type: 'pie',
-        data: data,
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
-                            if (context.raw !== null) {
-                                label += `R$ ${context.raw.toFixed(2)}`;
-                            }
-                            return label;
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
+	}
 </script>
 </html>
