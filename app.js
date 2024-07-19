@@ -54,20 +54,19 @@ function agendarNotificacaoDiaria() {
         }, tempoAteProximoHorario);
     }
 
-    // Solicitar permissão se ainda não foi concedida
-    if ('Notification' in window) {
-        if (Notification.permission === 'granted') {
-            // Caso a permissão já tenha sido concedida
-            agendarNotificacao();
-        } else {
-            // Caso a permissão não tenha sido concedida ainda, solicita ao usuário
-            Notification.requestPermission().then(function(permission) {
-                if (permission === 'granted') {
-                    agendarNotificacao();
-                }
-            });
-        }
-    }
+	
+	// Verifica se já solicitou permissão antes
+	const permissaoNotificacoes = localStorage.getItem('permissaoNotificacoes');
+	if (permissaoNotificacoes === 'granted') {
+		agendarNotificacao();
+	} else {
+		Notification.requestPermission().then(function(permission) {
+			if (permission === 'granted') {
+				localStorage.setItem('permissaoNotificacoes', 'granted');
+				agendarNotificacao();
+			}
+		});
+	}
 }
 
 // Chamar a função para agendar a notificação diária

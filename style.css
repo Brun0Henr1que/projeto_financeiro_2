@@ -2,7 +2,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    background-color: #A9A9A9;
     margin: 0;
     padding: 0;
     display: flex;
@@ -13,6 +13,14 @@ body {
 .header{
     max-width: 800px;
     text-align: center;
+}
+
+
+.logo img {
+    max-width: 300px; /
+    height: auto; 
+    display: block; 
+    margin: 0 auto;
 }
 
 .container {
