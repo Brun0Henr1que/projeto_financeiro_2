@@ -6,7 +6,12 @@ O projeto consiste em um PWA (Progressive Web Application) com a temática volta
 
 Para mais testes: [Projeto Hospedado no GITHUB pages](https://brun0henr1que.github.io/projeto_financeiro_2/)
 
+## Funcionalidades
 
+- Gravação de receita/despesa com detalhamento, data e hora.
+- Uso da câmera do smartphone ou webcam para ler valores de QRcodes.
+- Geração de gráficos de balanço entre receita e despesa.
+- Geração de histórico detalhado para registro das informações inseridas.
 
 ## Demonstração
 
@@ -24,10 +29,3 @@ Para mais testes: [Projeto Hospedado no GITHUB pages](https://brun0henr1que.gith
 
 #### Histórico
 <img src=""> 
-
-## Funcionalidades
-
-- Gravação de receita/despesa com detalhamento, data e hora.
-- Uso da câmera do smartphone ou webcam para ler valores de QRcodes.
-- Geração de gráficos de balanço entre receita e despesa.
-- Geração de histórico detalhado para registro das informações inseridas.
