@@ -29,4 +29,5 @@ Para mais testes: [Projeto Hospedado no GITHUB pages](https://brun0henr1que.gith
 <img src="./imagens/preview/geracao_graficos.png">
 
 #### Histórico
-<img src=""> 
+<img src="./imagens/preview/historico.png"> 
+<img src="./imagens/preview/detalhamento_historico.png">
